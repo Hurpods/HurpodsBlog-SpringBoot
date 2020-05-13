@@ -1,5 +1,5 @@
 server:
-  port: 8443
+  port: 8090
 
 spring:
   datasource:
@@ -16,6 +16,22 @@ spring:
       connection-timeout: 3000
       connection-test-query: SELECT 1
       pool-name: HurpodsHikariCP
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 200MB
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
+
+jwt:
+  header: Authorization
+  secret: mySecret
+  expiration: 604800
+  tokenHead: "Bearer "
+  route:
+    authentication:
+      path: auth
+      refresh: refresh
+      register: "auth/register"

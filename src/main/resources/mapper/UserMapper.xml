@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hurpods.springboot.hurpodsblog.dao.UserMapper">
+    <resultMap id="BaseResultMap" type="com.hurpods.springboot.hurpodsblog.pojo.User">
+        <id column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_password" jdbcType="VARCHAR" property="userPassword"/>
+        <result column="user_nick_name" jdbcType="VARCHAR" property="userNickName"/>
+        <result column="user_email" jdbcType="VARCHAR" property="userEmail"/>
+        <result column="user_tel" jdbcType="VARCHAR" property="userTel"/>
+        <result column="user_avatar" jdbcType="VARCHAR" property="userAvatar"/>
+        <result column="last_login_ip" jdbcType="VARCHAR" property="lastLoginIp"/>
+        <result column="register_time" jdbcType="TIMESTAMP" property="registerTime"/>
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
+        <result column="province" jdbcType="VARCHAR" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="is_admin" jdbcType="BIT" property="isAdmin"/>
+        <collection property="roles" javaType="com.hurpods.springboot.hurpodsblog.pojo.Role">
+            <id column="role_id" jdbcType="INTEGER" property="roleId"/>
+            <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+            <result column="role_name_zh" jdbcType="VARCHAR" property="roleNameZh"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select user.*, role.*
+        from user,
+             role,
+             user_role ur
+        where user.user_id = ur.user_id
+          and role.role_id = ur.role_id
+          and user.user_id = #{userId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByOthers" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select user.*, role.*
+        from user,
+             role,
+             user_role ur
+        where user_name = #{value}
+           OR user_email = #{value}
+           OR user_tel = #{value}
+            and user.user_id = ur.user_id
+            and role.role_id = ur.role_id
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from user
+        where user_id = #{userId,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.hurpods.springboot.hurpodsblog.pojo.User" useGeneratedKeys="true"
+            keyProperty="userId">
+        insert into user (user_name, user_password,
+                          user_nick_name, user_email, user_tel,
+                          user_avatar, last_login_ip, register_time,
+                          last_login_time, province, city)
+        values (#{userName,jdbcType=VARCHAR}, #{userPassword,jdbcType=VARCHAR},
+                #{userNickName,jdbcType=VARCHAR}, #{userEmail,jdbcType=VARCHAR}, #{userTel,jdbcType=VARCHAR},
+                #{userAvatar,jdbcType=VARCHAR}, #{lastLoginIp,jdbcType=VARCHAR}, #{registerTime,jdbcType=TIMESTAMP},
+                #{lastLoginTime,jdbcType=TIMESTAMP}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.hurpods.springboot.hurpodsblog.pojo.User" useGeneratedKeys="true"
+            keyProperty="userId">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="userPassword != null">
+                user_password,
+            </if>
+            <if test="userNickName != null">
+                user_nick_name,
+            </if>
+            <if test="userEmail != null">
+                user_email,
+            </if>
+            <if test="userTel != null">
+                user_tel,
+            </if>
+            <if test="userAvatar != null">
+                user_avatar,
+            </if>
+            <if test="lastLoginIp != null">
+                last_login_ip,
+            </if>
+            <if test="registerTime != null">
+                register_time,
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time,
+            </if>
+            <if test="province != null">
+                province,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="userPassword != null">
+                #{userPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="userNickName != null">
+                #{userNickName,jdbcType=VARCHAR},
+            </if>
+            <if test="userEmail != null">
+                #{userEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="userTel != null">
+                #{userTel,jdbcType=VARCHAR},
+            </if>
+            <if test="userAvatar != null">
+                #{userAvatar,jdbcType=VARCHAR},
+            </if>
+            <if test="lastLoginIp != null">
+                #{lastLoginIp,jdbcType=VARCHAR},
+            </if>
+            <if test="registerTime != null">
+                #{registerTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastLoginTime != null">
+                #{lastLoginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="province != null">
+                #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                #{city,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.hurpods.springboot.hurpodsblog.pojo.User">
+        update user
+        <set>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="userPassword != null">
+                user_password = #{userPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="userNickName != null">
+                user_nick_name = #{userNickName,jdbcType=VARCHAR},
+            </if>
+            <if test="userEmail != null">
+                user_email = #{userEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="userTel != null">
+                user_tel = #{userTel,jdbcType=VARCHAR},
+            </if>
+            <if test="userAvatar != null">
+                user_avatar = #{userAvatar,jdbcType=VARCHAR},
+            </if>
+            <if test="lastLoginIp != null">
+                last_login_ip = #{lastLoginIp,jdbcType=VARCHAR},
+            </if>
+            <if test="registerTime != null">
+                register_time = #{registerTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="isAdmin != null">
+                is_admin = #{isAdmin,jdbcType=BIT},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.hurpods.springboot.hurpodsblog.pojo.User">
+        update user
+        set user_name       = #{userName,jdbcType=VARCHAR},
+            user_password   = #{userPassword,jdbcType=VARCHAR},
+            user_nick_name  = #{userNickName,jdbcType=VARCHAR},
+            user_email      = #{userEmail,jdbcType=VARCHAR},
+            user_tel        = #{userTel,jdbcType=VARCHAR},
+            user_avatar     = #{userAvatar,jdbcType=VARCHAR},
+            last_login_ip   = #{lastLoginIp,jdbcType=VARCHAR},
+            register_time   = #{registerTime,jdbcType=TIMESTAMP},
+            last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+            province        = #{province,jdbcType=VARCHAR},
+            city            = #{city,jdbcType=VARCHAR},
+            is_admin        = #{isAdmin,jdbcType=BIT}
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+
+</mapper>
