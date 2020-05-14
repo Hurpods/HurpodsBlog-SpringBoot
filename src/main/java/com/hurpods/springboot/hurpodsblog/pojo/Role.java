@@ -1,22 +1,16 @@
 package com.hurpods.springboot.hurpodsblog.pojo;
 
 import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
 
 @Data
-public class Role implements GrantedAuthority {
+public class Role {
     private Integer roleId;
 
     private String roleName;
 
-    private String roleNameZh;
+    private String roleDescription;
 
     public Role() {
 
-    }
-
-    @Override
-    public String getAuthority() {
-        return roleName;
     }
 }
