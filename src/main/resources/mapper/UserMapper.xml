@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hurpods.springboot.hurpodsblog.dao.UserDAO">
+    <resultMap id="UserResultMap" type="com.hurpods.ssm.blog.models.User">
+        <id column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="user_psw" property="userPsw" jdbcType="VARCHAR"/>
+        <result column="user_nick_name" property="userNickName" jdbcType="VARCHAR"/>
+        <result column="user_email" property="userEmail" jdbcType="VARCHAR"/>
+        <result column="user_tel" property="userTel" jdbcType="VARCHAR"/>
+        <result column="user_avatar" property="userAvatar" jdbcType="VARCHAR"/>
+        <result column="user_last_login_ip" property="userLastLoginIp" jdbcType="VARCHAR"/>
+        <result column="user_register_time" property="userRegisterTime" jdbcType="TIMESTAMP"/>
+        <result column="user_last_login_time" property="userLastLoginTime" jdbcType="TIMESTAMP"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="enabled" property="enabled" jdbcType="TINYINT"/>
+        <collection property="roles" javaType="com.hurpods.springboot.hurpodsblog.pojo.Role">
+            <id column="role_id" property="roleId" jdbcType="INTEGER"/>
+            <result column="role_name" property="roleName" jdbcType="VARCHAR"/>
+            <result column="role_description" property="roleDescription" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <!--  获取所有用户  -->
+    <select id="getAllUser" resultMap="UserResultMap">
+        select user.*, role.*
+        from user,
+             role,
+             user_role ur
+        where user.user_id = ur.user_id
+          and role.role_id = ur.role_id
+    </select>
+
+    <!--  通过各种资料获取User对象  -->
+    <select id="getUserById" resultMap="UserResultMap">
+        select user.*, role.*
+        from user,
+             role,
+             user_role ur
+        where user.user_id = #{userId,jdbcType=INTEGER}
+          and user.user_id = ur.user_id
+          and role.role_id = ur.role_id
+    </select>
+
+    <select id="getUserByOthers" resultMap="UserResultMap">
+        select user.*, role.*
+        from user,
+             role,
+             user_role ur
+        where user_name = #{value}
+           OR user_email = #{value}
+           OR user_tel = #{value}
+            and user.user_id = ur.user_id
+            and role.role_id = ur.role_id
+    </select>
+
+    <!--  注销用户  -->
+    <delete id="deleteUserById">
+        delete
+        from user
+        where user_id = #{userId,jdbcType=INTEGER}
+    </delete>
+
+    <!--  注册用户  -->
+    <insert id="registerUser" useGeneratedKeys="true" keyProperty="userId"
+            parameterType="com.hurpods.springboot.hurpodsblog.pojo.User">
+        insert into user(user_name, user_password, user_nick_name, user_email, user_tel, user_avatar,
+                         last_login_ip, register_time, last_login_time, enabled)
+        values (#{userName,jdbcType=VARCHAR}, #{userPassword,jdbcType=VARCHAR},
+                #{userNickName,jdbcType=VARCHAR}, #{userEmail,jdbcType=VARCHAR}, #{userTel,jdbcType=VARCHAR},
+                #{userAvatar,jdbcType=VARCHAR}, #{lastLoginIp,jdbcType=VARCHAR},
+                #{registerTime,jdbcType=TIMESTAMP}, #{lastLoginTime,jdbcType=TIMESTAMP},
+                #{enabled,jdbcType=TINYINT})
+    </insert>
+
+    <!--  更改状态/资料  -->
+    <update id="updateUserInfo" parameterType="com.hurpods.springboot.hurpodsblog.pojo.User">
+        update user
+        <set>
+            <if test="userNickName != null">user_nick_name=#{userNickName,jdbcType=VARCHAR},</if>
+            <if test="userEmail != null">user_email=#{userEmail,jdbcType=VARCHAR},</if>
+            <if test="userTel != null">user_tel=#{userTel,jdbcType=VARCHAR},</if>
+            <if test="userAvatar != null">user_avatar=#{userAvatar,jdbcType=VARCHAR},</if>
+            <if test="userLastLoginIp != null">last_login_ip=#{lastLoginIp,jdbcType=VARCHAR},</if>
+            <if test="userLastLoginTime != null">last_login_time=#{lastLoginTime,jdbcType=TIMESTAMP},</if>
+            <if test="province != null">province=#{province,jdbcType=VARCHAR},</if>
+            <if test="city != null">city=#{city,jdbcType=VARCHAR}</if>
+        </set>
+        where user_id=#{userId,jdbcType=INTEGER}
+    </update>
+
+    <!--  更改密码  -->
+    <update id="updateUserPassword" parameterType="com.hurpods.springboot.hurpodsblog.pojo.User">
+        update user
+        <set>
+            <if test='userPsw != "" and userPsw != null'>
+                user_password=#{userPassword,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where user_id=#{userId,jdbcType=INTEGER}
+    </update>
+
+</mapper>

@@ -1,6 +1,7 @@
 package com.hurpods.springboot.hurpodsblog.utils;
 
 
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,34 +45,34 @@ public class MyUtil {
     }
 
     //利用hash3-256算法和加盐再hash确保不被彩虹表破解
-//    public String hashPass(String str, String salt) {
-//        String result = sha3256(str);
-//        result += salt;
-//        result = sha3256(result);
-//        return result;
-//    }
+    public String hashPass(String str, String salt) {
+        String result = sha3256(str);
+        result += salt;
+        result = sha3256(result);
+        return result;
+    }
 
     //hash3-256摘要加密算法，用来脱敏密码
-//    public String sha3256(String str) {
-//        MessageDigest messageDigest;
-//        String encdeStr = "";
-//        try {
-//            messageDigest = MessageDigest.getInstance("SHA-256");
-//            byte[] bytes = messageDigest.digest(str.getBytes(StandardCharsets.UTF_8));
-//            encdeStr = Hex.encodeHexString(bytes);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return encdeStr;
-//    }
-    
+    public String sha3256(String str) {
+        MessageDigest messageDigest;
+        String encdeStr = "";
+        try {
+            messageDigest = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = messageDigest.digest(str.getBytes(StandardCharsets.UTF_8));
+            encdeStr = Hex.encodeHexString(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return encdeStr;
+    }
+
     //随机产生字符串
-    public String getRandomString(int length){
-        String str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random random=new Random();
-        StringBuilder stringBuilder=new StringBuilder();
-        for(int i=0;i<length;i++){
-            int number=random.nextInt(62);
+    public String getRandomString(int length) {
+        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(62);
             stringBuilder.append(str.charAt(number));
         }
         return stringBuilder.toString();

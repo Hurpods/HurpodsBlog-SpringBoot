@@ -2,11 +2,13 @@ package com.hurpods.springboot.hurpodsblog.pojo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 2303937118397714454L;
     private Integer userId;
 
     private String userName;
@@ -31,7 +33,7 @@ public class User {
 
     private String city;
 
-    private Boolean isAdmin;
+    private Boolean enabled;
 
     private List<Role> roles;
 }
