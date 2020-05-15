@@ -11,25 +11,17 @@ import java.io.File;
 public class MyWebConfigurer implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry
-//                .addResourceHandler("/api/file/**")
-//                .addResourceLocations(
-//                        "file:"
-//                                + "D:"
-//                                + File.separator
-//                                + "Project"
-//                                + File.separator
-//                                + "learning"
-//                                + File.separator
-//                                + "vue_springboot"
-//                                + File.separator
-//                                + "src"
-//                                + File.separator
-//                                + "assets"
-//                                + File.separator
-//                                + "img"
-//                                + File.separator
-//                );
+        registry
+                .addResourceHandler("/file/**")
+                .addResourceLocations(
+                        "file:"
+                                + "D:"
+                                + File.separator
+                                + "Project"
+                                + File.separator
+                                + "uploads"
+                                + File.separator
+                );
     }
 
     @Override

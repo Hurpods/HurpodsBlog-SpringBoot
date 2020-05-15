@@ -10,11 +10,13 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class MyUtil {
     //从request中获取IP信息
-    public String getIpAddress(HttpServletRequest request) {
+    public static String getIpAddress(HttpServletRequest request) {
         String ipAddress = request.getHeader("x-forwarded-for");
         if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getHeader("Proxy-Client-IP");
@@ -45,7 +47,7 @@ public class MyUtil {
     }
 
     //利用hash3-256算法和加盐再hash确保不被彩虹表破解
-    public String hashPass(String str, String salt) {
+    public static String hashPass(String str, String salt) {
         String result = sha3256(str);
         result += salt;
         result = sha3256(result);
@@ -53,7 +55,7 @@ public class MyUtil {
     }
 
     //hash3-256摘要加密算法，用来脱敏密码
-    public String sha3256(String str) {
+    public static String sha3256(String str) {
         MessageDigest messageDigest;
         String encdeStr = "";
         try {
@@ -67,7 +69,7 @@ public class MyUtil {
     }
 
     //随机产生字符串
-    public String getRandomString(int length) {
+    public static String getRandomString(int length) {
         String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         Random random = new Random();
         StringBuilder stringBuilder = new StringBuilder();
@@ -76,5 +78,12 @@ public class MyUtil {
             stringBuilder.append(str.charAt(number));
         }
         return stringBuilder.toString();
+    }
+    
+    //正则匹配
+    public static boolean regexMatch(String regex, String str) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(str);
+        return matcher.matches();
     }
 }

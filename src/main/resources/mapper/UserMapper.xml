@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.hurpods.springboot.hurpodsblog.dao.UserDAO">
-    <resultMap id="UserResultMap" type="com.hurpods.ssm.blog.models.User">
+    <resultMap id="UserResultMap" type="com.hurpods.springboot.hurpodsblog.pojo.User">
         <id column="user_id" property="userId" jdbcType="INTEGER"/>
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
         <result column="user_psw" property="userPsw" jdbcType="VARCHAR"/>
@@ -15,7 +15,7 @@
         <result column="province" property="province" jdbcType="VARCHAR"/>
         <result column="city" property="city" jdbcType="VARCHAR"/>
         <result column="enabled" property="enabled" jdbcType="TINYINT"/>
-        <collection property="roles" javaType="com.hurpods.springboot.hurpodsblog.pojo.Role">
+        <collection property="roles" ofType="com.hurpods.springboot.hurpodsblog.pojo.Role">
             <id column="role_id" property="roleId" jdbcType="INTEGER"/>
             <result column="role_name" property="roleName" jdbcType="VARCHAR"/>
             <result column="role_description" property="roleDescription" jdbcType="VARCHAR"/>
@@ -43,14 +43,23 @@
           and role.role_id = ur.role_id
     </select>
 
+    <select id="getUserByUsername" resultMap="UserResultMap">
+        select user.*, role.*
+        from user,
+             role,
+             user_role ur
+        where user.user_id = ur.user_id
+          and role.role_id = ur.role_id
+          and user.user_name = #{username,jdbcType=VARCHAR}
+    </select>
+
     <select id="getUserByOthers" resultMap="UserResultMap">
         select user.*, role.*
         from user,
              role,
              user_role ur
-        where user_name = #{value}
-           OR user_email = #{value}
-           OR user_tel = #{value}
+        where user_email = #{value,jdbcType=VARCHAR}
+           OR user_tel = #{value,jdbcType=VARCHAR}
             and user.user_id = ur.user_id
             and role.role_id = ur.role_id
     </select>
