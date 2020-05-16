@@ -7,6 +7,7 @@ import com.hurpods.springboot.hurpodsblog.dto.RegisterRequest;
 import com.hurpods.springboot.hurpodsblog.pojo.User;
 import com.hurpods.springboot.hurpodsblog.pojo.UserRoleRef;
 import com.hurpods.springboot.hurpodsblog.result.Result;
+import com.hurpods.springboot.hurpodsblog.result.ResultCode;
 import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
 import com.hurpods.springboot.hurpodsblog.service.UserService;
 import com.hurpods.springboot.hurpodsblog.utils.MyUtil;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import static com.hurpods.springboot.hurpodsblog.utils.MyUtil.regexMatch;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private static final String BASE_URL = "http://localhost:8090";
     private static final String DEFAULT_AVATAR = "/file/img/avatar/0.png";
 
     @Autowired
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(RegisterRequest registerRequest, HttpServletRequest request) {
+    public User registerUser(RegisterRequest registerRequest, HttpServletRequest request) throws Exception {
         if (!registerRequest.getPassword().equals(registerRequest.getRePassword())) {
             return null;
         }
@@ -73,13 +74,10 @@ public class UserServiceImpl implements UserService {
             User user = new User();
 
             user.setUserName(registerRequest.getUsername());
-
-            String salt = Base64.getEncoder().encodeToString(registerRequest.getUsername().getBytes());
-            user.setUserPassword(MyUtil.hashPass(registerRequest.getPassword(), salt));
-
+            user.setUserPassword(MyUtil.hashPass(registerRequest.getPassword(), getSalt(registerRequest)));
             user.setUserNickName("用户" + MyUtil.getRandomString(12));
             user.setUserEmail(registerRequest.getEmail());
-            user.setUserAvatar(DEFAULT_AVATAR);
+            user.setUserAvatar(BASE_URL + DEFAULT_AVATAR);
             user.setLastLoginIp(MyUtil.getIpAddress(request));
             user.setRegisterTime(nowTime);
             user.setLastLoginTime(nowTime);
@@ -100,16 +98,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result loginUser(LoginRequest loginRequest, HttpServletRequest request) {
+    public Result loginUser(LoginRequest loginRequest, HttpServletRequest request) throws Exception {
         User user = userDAO.getUserByUsername(loginRequest.getUsername());
-        String salt = Base64.getEncoder().encodeToString(loginRequest.getUsername().getBytes());
-        try {
-            System.out.println( getSalt(loginRequest));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        if (user.getEnabled()) {
+            String password = MyUtil.hashPass(loginRequest.getPassword(), getSalt(loginRequest));
+            if (password.equals(user.getUserPassword())) {
+                return ResultFactory.buildSuccessResult(user);
+            } else {
+                return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "账号或密码错误");
+            }
+        } else {
+            return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "账户被封禁，禁止登陆");
         }
-
-        return null;
     }
 
     @Override
@@ -179,11 +179,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private String getSalt(Object object) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    private String getSalt(Object object) throws Exception {
         Class cl = Class.forName(object.getClass().getName());
-        System.out.println(object.getClass().getName());
-        Object requestSalt = cl.newInstance();
         Method getUsername = cl.getMethod("getUsername");
-        return (String) getUsername.invoke(requestSalt);
+        String username = (String) getUsername.invoke(object);
+
+        return Base64.getEncoder().encodeToString(username.getBytes());
     }
 }

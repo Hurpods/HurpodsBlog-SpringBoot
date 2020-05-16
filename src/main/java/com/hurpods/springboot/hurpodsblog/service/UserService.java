@@ -7,6 +7,7 @@ import com.hurpods.springboot.hurpodsblog.result.Result;
 import org.apache.ibatis.annotations.Param;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface UserService {
@@ -18,9 +19,9 @@ public interface UserService {
 
     void deleteUserById(@Param("userId") Integer userId);
 
-    User registerUser(RegisterRequest registerRequest, HttpServletRequest request);
+    User registerUser(RegisterRequest registerRequest, HttpServletRequest request) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, Exception;
 
-    Result loginUser(LoginRequest loginRequest, HttpServletRequest request);
+    Result loginUser(LoginRequest loginRequest, HttpServletRequest request) throws Exception;
 
     void updateUserInfo(User user);
 

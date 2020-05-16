@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,7 +26,7 @@ public class AuthController {
     UserService userService;
 
     @PostMapping("/register")
-    public Result registerUser(RegisterRequest registerRequest, HttpServletRequest request) {
+    public Result registerUser(RegisterRequest registerRequest, HttpServletRequest request) throws Exception {
         User user = userService.registerUser(registerRequest, request);
         if (user != null) {
             return ResultFactory.buildSuccessResult(user);
@@ -48,13 +49,18 @@ public class AuthController {
                 result = userService.validateEmail(value);
                 break;
         }
-        LOGGER.info("validate" + type);
+
         return result;
     }
 
     @PostMapping("/login")
-    public Result login(LoginRequest loginRequest, HttpServletRequest request) {
-        userService.loginUser(loginRequest, request);
-        return ResultFactory.buildSuccessResult(loginRequest);
+    public Result login(LoginRequest loginRequest, HttpServletRequest request) throws Exception{
+        return userService.loginUser(loginRequest, request);
+    }
+
+    @PostMapping("/logout")
+    public Result logout(HttpSession session){
+        System.out.println(session.getAttribute("userName"));
+        return ResultFactory.buildFailureResult("test");
     }
 }
