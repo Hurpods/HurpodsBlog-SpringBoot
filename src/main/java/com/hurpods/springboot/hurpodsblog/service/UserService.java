@@ -15,13 +15,15 @@ public interface UserService {
 
     User getUserById(@Param("userId") Integer userId);
 
+    User getUserByUsername(@Param("username") String username);
+
     User getUserByOthers(@Param("value") String value);
 
     void deleteUserById(@Param("userId") Integer userId);
 
-    User registerUser(RegisterRequest registerRequest, HttpServletRequest request) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, Exception;
+    User registerUser(RegisterRequest registerRequest, HttpServletRequest request) throws  Exception;
 
-    Result loginUser(LoginRequest loginRequest, HttpServletRequest request) throws Exception;
+//    Result loginUser(LoginRequest loginRequest, HttpServletRequest request) throws Exception;
 
     void updateUserInfo(User user);
 

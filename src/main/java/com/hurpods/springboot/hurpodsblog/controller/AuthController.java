@@ -1,6 +1,5 @@
 package com.hurpods.springboot.hurpodsblog.controller;
 
-import com.hurpods.springboot.hurpodsblog.dto.LoginRequest;
 import com.hurpods.springboot.hurpodsblog.dto.RegisterRequest;
 import com.hurpods.springboot.hurpodsblog.pojo.User;
 import com.hurpods.springboot.hurpodsblog.result.Result;
@@ -51,11 +50,6 @@ public class AuthController {
         }
 
         return result;
-    }
-
-    @PostMapping("/login")
-    public Result login(LoginRequest loginRequest, HttpServletRequest request) throws Exception{
-        return userService.loginUser(loginRequest, request);
     }
 
     @PostMapping("/logout")

@@ -1,8 +1,10 @@
 package com.hurpods.springboot.hurpodsblog.pojo;
 
 import lombok.Data;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,4 +38,10 @@ public class User implements Serializable {
     private Boolean enabled;
 
     private List<Role> roles;
+
+    public List<SimpleGrantedAuthority> getSecurityRoles() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName())));
+        return authorities;
+    }
 }

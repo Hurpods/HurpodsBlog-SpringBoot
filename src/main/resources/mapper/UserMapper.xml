@@ -43,7 +43,7 @@
           and role.role_id = ur.role_id
     </select>
 
-    <select id="getUserByUsername" resultMap="UserResultMap">
+    <select id="getUserByUsername" resultMap="UserResultMap" parameterType="java.lang.String">
         select user.*, role.*
         from user,
              role,

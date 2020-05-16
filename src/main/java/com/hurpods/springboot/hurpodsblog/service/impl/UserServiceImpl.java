@@ -12,6 +12,7 @@ import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
 import com.hurpods.springboot.hurpodsblog.service.UserService;
 import com.hurpods.springboot.hurpodsblog.utils.MyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +31,10 @@ public class UserServiceImpl implements UserService {
     private static final String DEFAULT_AVATAR = "/file/img/avatar/0.png";
 
     @Autowired
-    UserDAO userDAO;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    UserDAO userDAO;
     @Autowired
     UserRoleRefDAO urrDAO;
 
@@ -43,6 +46,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Integer userId) {
         return userDAO.getUserById(userId);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        return userDAO.getUserByUsername(username);
     }
 
     @Override
@@ -74,7 +82,7 @@ public class UserServiceImpl implements UserService {
             User user = new User();
 
             user.setUserName(registerRequest.getUsername());
-            user.setUserPassword(MyUtil.hashPass(registerRequest.getPassword(), getSalt(registerRequest)));
+            user.setUserPassword(bCryptPasswordEncoder.encode(registerRequest.getPassword()));
             user.setUserNickName("用户" + MyUtil.getRandomString(12));
             user.setUserEmail(registerRequest.getEmail());
             user.setUserAvatar(BASE_URL + DEFAULT_AVATAR);
@@ -89,28 +97,29 @@ public class UserServiceImpl implements UserService {
             UserRoleRef userRoleRef = new UserRoleRef();
             userRoleRef.setUserId(user.getUserId());
             userRoleRef.setRoleId(2);
+
             urrDAO.createUserRoleRef(userRoleRef);
 
-            return user;
+            return userDAO.getUserByUsername(registerRequest.getUsername());
         } else {
             return null;
         }
     }
 
-    @Override
-    public Result loginUser(LoginRequest loginRequest, HttpServletRequest request) throws Exception {
-        User user = userDAO.getUserByUsername(loginRequest.getUsername());
-        if (user.getEnabled()) {
-            String password = MyUtil.hashPass(loginRequest.getPassword(), getSalt(loginRequest));
-            if (password.equals(user.getUserPassword())) {
-                return ResultFactory.buildSuccessResult(user);
-            } else {
-                return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "账号或密码错误");
-            }
-        } else {
-            return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "账户被封禁，禁止登陆");
-        }
-    }
+//    @Override
+//    public Result loginUser(LoginRequest loginRequest, HttpServletRequest request) throws Exception {
+//        User user = userDAO.getUserByUsername(loginRequest.getUsername());
+//        if (user.getEnabled()) {
+//            String password = MyUtil.hashPass(loginRequest.getPassword(), getSalt(loginRequest));
+//            if (password.equals(user.getUserPassword())) {
+//                return ResultFactory.buildSuccessResult(user);
+//            } else {
+//                return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "账号或密码错误");
+//            }
+//        } else {
+//            return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "账户被封禁，禁止登陆");
+//        }
+//    }
 
     @Override
     public void updateUserInfo(User user) {
@@ -133,7 +142,7 @@ public class UserServiceImpl implements UserService {
             boolean flag = regexMatch(pat, username);
             if (!flag) {
                 return ResultFactory.buildFailureResult("用户名仅由字母和数字组成，且仅以字母开头");
-            } else if (userDAO.getUserByUsername(username) != null) {
+            } else if (getUserByUsername(username) != null) {
                 return ResultFactory.buildFailureResult(username + "已被注册");
             } else {
                 return ResultFactory.buildSuccessResult(username);
@@ -151,7 +160,7 @@ public class UserServiceImpl implements UserService {
                 boolean flag = regexMatch(pat, telephone);
                 if (!flag) {
                     return ResultFactory.buildFailureResult("手机号码格式错误");
-                } else if (userDAO.getUserByOthers(telephone) != null) {
+                } else if (getUserByOthers(telephone) != null) {
                     return ResultFactory.buildFailureResult(telephone + "已被注册");
                 } else {
                     return ResultFactory.buildSuccessResult(telephone);
@@ -171,7 +180,7 @@ public class UserServiceImpl implements UserService {
             boolean flag = regexMatch(pat, email);
             if (!flag) {
                 return ResultFactory.buildFailureResult("邮箱地址格式错误");
-            } else if (userDAO.getUserByOthers(email) != null) {
+            } else if (getUserByOthers(email) != null) {
                 return ResultFactory.buildFailureResult(email + "已被注册");
             } else {
                 return ResultFactory.buildSuccessResult(email);
