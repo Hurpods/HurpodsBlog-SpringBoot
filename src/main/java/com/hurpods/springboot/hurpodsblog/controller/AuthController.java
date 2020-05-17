@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/auth")
@@ -50,11 +49,5 @@ public class AuthController {
         }
 
         return result;
-    }
-
-    @PostMapping("/logout")
-    public Result logout(HttpSession session){
-        System.out.println(session.getAttribute("userName"));
-        return ResultFactory.buildFailureResult("test");
     }
 }

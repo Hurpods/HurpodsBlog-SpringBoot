@@ -2,13 +2,11 @@ package com.hurpods.springboot.hurpodsblog.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hurpods.springboot.hurpodsblog.dto.LoginRequest;
-import com.hurpods.springboot.hurpodsblog.pojo.User;
 import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
 import com.hurpods.springboot.hurpodsblog.security.constans.SecurityConstants;
 import com.hurpods.springboot.hurpodsblog.security.entity.JwtUser;
 import com.hurpods.springboot.hurpodsblog.security.utils.JwtTokenUtil;
-import com.hurpods.springboot.hurpodsblog.service.UserService;
-import com.hurpods.springboot.hurpodsblog.service.impl.UserServiceImpl;
+import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,7 +14,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +33,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         super.setFilterProcessesUrl(SecurityConstants.AUTH_LOGIN_URL);
     }
 
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -46,7 +44,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     loginRequest.getUsername(), loginRequest.getPassword());
             return authenticationManager.authenticate(authentication);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            PrintWriter printWriter = response.getWriter();
+            printWriter.write(objectMapper.writeValueAsString(ResultFactory.buildFailureResult("用户名或密码错误")));
+            printWriter.flush();
+            printWriter.close();
+            System.out.println(e.toString());
             return null;
         }
     }
@@ -54,23 +56,33 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         JwtUser jwtUser = (JwtUser) authResult.getPrincipal();
-        List<String> authorities = jwtUser.getAuthorities()
-                .stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        String token = JwtTokenUtil.createToken(jwtUser.getUsername(), authorities, rememberMe.get());
-        rememberMe.remove();
-        response.setHeader(SecurityConstants.TOKEN_HEADER, token);
-
-        ObjectMapper mapper = new ObjectMapper();
-        response.setHeader("Content-Type", "application/json;charset=utf8");
-        jwtUser.setPassword("");
         PrintWriter printWriter = response.getWriter();
-        printWriter.write(mapper.writeValueAsString(ResultFactory.buildSuccessResult(jwtUser)));
+        ObjectMapper mapper = new ObjectMapper();
+
+        //如果该账号没有被封禁则返回token及账号信息
+        if (jwtUser.getEnabled()) {
+            List<String> authorities = jwtUser.getAuthorities()
+                    .stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+            String token = JwtTokenUtil.createToken(jwtUser.getUsername(), authorities, rememberMe.get());
+            rememberMe.remove();
+            //消除密码
+            jwtUser.setPassword("");
+            response.setHeader(SecurityConstants.TOKEN_HEADER, token);
+            response.setHeader("Content-Type", "application/json;charset=utf8");
+            //写入用户基本信息
+            printWriter.write(mapper.writeValueAsString(ResultFactory.buildSuccessResult(jwtUser)));
+        } else {
+            printWriter.write(mapper.writeValueAsString(ResultFactory.buildFailureResult("该账号已经被封停，禁止使用")));
+        }
+
         printWriter.flush();
         printWriter.close();
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, failed.getMessage());
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        PrintWriter printWriter = response.getWriter();
+        printWriter.write(mapper.writeValueAsString(ResultFactory.buildFailureResult("账号或密码错误")));
     }
 }

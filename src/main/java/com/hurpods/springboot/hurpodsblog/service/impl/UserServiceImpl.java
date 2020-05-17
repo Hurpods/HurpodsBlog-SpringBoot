@@ -106,20 +106,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    @Override
-//    public Result loginUser(LoginRequest loginRequest, HttpServletRequest request) throws Exception {
-//        User user = userDAO.getUserByUsername(loginRequest.getUsername());
-//        if (user.getEnabled()) {
-//            String password = MyUtil.hashPass(loginRequest.getPassword(), getSalt(loginRequest));
-//            if (password.equals(user.getUserPassword())) {
-//                return ResultFactory.buildSuccessResult(user);
-//            } else {
-//                return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "账号或密码错误");
-//            }
-//        } else {
-//            return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "账户被封禁，禁止登陆");
-//        }
-//    }
 
     @Override
     public void updateUserInfo(User user) {
