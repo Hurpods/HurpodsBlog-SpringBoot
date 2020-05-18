@@ -4,6 +4,7 @@ import com.hurpods.springboot.hurpodsblog.dao.UserDAO;
 import com.hurpods.springboot.hurpodsblog.dao.UserRoleRefDAO;
 import com.hurpods.springboot.hurpodsblog.dto.LoginRequest;
 import com.hurpods.springboot.hurpodsblog.dto.RegisterRequest;
+import com.hurpods.springboot.hurpodsblog.dto.UpdateRequest;
 import com.hurpods.springboot.hurpodsblog.pojo.User;
 import com.hurpods.springboot.hurpodsblog.pojo.UserRoleRef;
 import com.hurpods.springboot.hurpodsblog.result.Result;
@@ -64,7 +65,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(RegisterRequest registerRequest, HttpServletRequest request) throws Exception {
+    public Result deleteUserByUsername(String password, String username) {
+        User user = userDAO.getUserByUsername(username);
+        boolean matches = bCryptPasswordEncoder.matches(password, user.getUserPassword());
+        if (matches) {
+            int num = userDAO.deleteUserByUsername(username);
+            return num == 1 ? ResultFactory.buildSuccessResult("账号成功删除，即将返回首页") : ResultFactory.buildFailureResult("发生错误，请检查输入后重试");
+        } else {
+            return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "密码错误，请重新输入");
+        }
+    }
+
+    @Override
+    public User registerUser(RegisterRequest registerRequest, HttpServletRequest request) {
         if (!registerRequest.getPassword().equals(registerRequest.getRePassword())) {
             return null;
         }
@@ -106,15 +119,44 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     @Override
-    public void updateUserInfo(User user) {
-        userDAO.updateUserInfo(user);
+    public Result updateUserInfo(UpdateRequest updateRequest, String username) {
+        User user = userDAO.getUserByUsername(username);
+
+        user.setUserNickName(updateRequest.getNickName().equals("") ? user.getUserNickName() : updateRequest.getNickName());
+        user.setUserTel(updateRequest.getTelephone().equals("") ? user.getUserTel() : updateRequest.getTelephone());
+        user.setUserLocate(updateRequest.getLocate() == null ? user.getUserLocate() : updateRequest.getLocate());
+
+        if (!updateRequest.getEmail().equals("")) {
+            Result result = validateEmail(updateRequest.getEmail());
+            if (result.getCode() == 1) {
+                user.setUserEmail(updateRequest.getEmail());
+            } else {
+                return result;
+            }
+        }
+
+        int num = userDAO.updateUserInfo(user);
+
+        return num == 1 ? ResultFactory.buildSuccessResult(user) : ResultFactory.buildFailureResult("发生错误，请检查输入后重试");
     }
 
     @Override
-    public void updateUserPassword(User user) {
-        userDAO.updateUserPassword(user);
+    public Result updateUserPassword(UpdateRequest updateRequest, String username) {
+        User user = userDAO.getUserByUsername(username);
+        //加密后的密码匹配不能用.equals(),需要用Spring Security提供的matches对比
+        boolean matches = bCryptPasswordEncoder.matches(updateRequest.getOldPassword(), user.getUserPassword());
+        if (matches) {
+            if (updateRequest.getNewPassword().equals(updateRequest.getConfirmPassword())) {
+                user.setUserPassword(bCryptPasswordEncoder.encode(updateRequest.getNewPassword()));
+                int num = userDAO.updateUserPassword(user);
+                return num == 1 ? ResultFactory.buildSuccessResult("修改密码成功，请重新登录") : ResultFactory.buildFailureResult("发生错误，请检查输入后重试");
+            } else {
+                return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "两次输入的密码不一致");
+            }
+        } else {
+            return ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_INVALID, "原始密码错误！");
+        }
     }
 
     @Override

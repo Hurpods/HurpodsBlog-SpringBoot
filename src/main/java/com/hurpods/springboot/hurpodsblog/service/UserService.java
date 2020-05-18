@@ -2,6 +2,7 @@ package com.hurpods.springboot.hurpodsblog.service;
 
 import com.hurpods.springboot.hurpodsblog.dto.LoginRequest;
 import com.hurpods.springboot.hurpodsblog.dto.RegisterRequest;
+import com.hurpods.springboot.hurpodsblog.dto.UpdateRequest;
 import com.hurpods.springboot.hurpodsblog.pojo.User;
 import com.hurpods.springboot.hurpodsblog.result.Result;
 import org.apache.ibatis.annotations.Param;
@@ -21,13 +22,13 @@ public interface UserService {
 
     void deleteUserById(@Param("userId") Integer userId);
 
-    User registerUser(RegisterRequest registerRequest, HttpServletRequest request) throws  Exception;
+    Result deleteUserByUsername(String password, @Param("userName") String username);
 
-//    Result loginUser(LoginRequest loginRequest, HttpServletRequest request) throws Exception;
+    User registerUser(RegisterRequest registerRequest, HttpServletRequest request);
 
-    void updateUserInfo(User user);
+    Result updateUserInfo(UpdateRequest updateRequest, String username);
 
-    void updateUserPassword(User user);
+    Result updateUserPassword(UpdateRequest updateRequest, String username);
 
     Result validateUsername(String username);
 

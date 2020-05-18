@@ -12,8 +12,7 @@
         <result column="last_login_ip" property="lastLoginIp" jdbcType="VARCHAR"/>
         <result column="register_time" property="registerTime" jdbcType="TIMESTAMP"/>
         <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP"/>
-        <result column="province" property="province" jdbcType="VARCHAR"/>
-        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="user_locate" property="userLocate" jdbcType="VARCHAR"/>
         <result column="enabled" property="enabled" jdbcType="TINYINT"/>
         <collection property="roles" ofType="com.hurpods.springboot.hurpodsblog.pojo.Role">
             <id column="role_id" property="roleId" jdbcType="INTEGER"/>
@@ -71,6 +70,12 @@
         where user_id = #{userId,jdbcType=INTEGER}
     </delete>
 
+    <delete id="deleteUserByUsername">
+        delete
+        from user
+        where user_name = #{userName,jdbcType=VARCHAR}
+    </delete>
+
     <!--  注册用户  -->
     <insert id="registerUser" useGeneratedKeys="true" keyProperty="userId"
             parameterType="com.hurpods.springboot.hurpodsblog.pojo.User">
@@ -91,10 +96,9 @@
             <if test="userEmail != null">user_email=#{userEmail,jdbcType=VARCHAR},</if>
             <if test="userTel != null">user_tel=#{userTel,jdbcType=VARCHAR},</if>
             <if test="userAvatar != null">user_avatar=#{userAvatar,jdbcType=VARCHAR},</if>
-            <if test="userLastLoginIp != null">last_login_ip=#{lastLoginIp,jdbcType=VARCHAR},</if>
-            <if test="userLastLoginTime != null">last_login_time=#{lastLoginTime,jdbcType=TIMESTAMP},</if>
-            <if test="province != null">province=#{province,jdbcType=VARCHAR},</if>
-            <if test="city != null">city=#{city,jdbcType=VARCHAR}</if>
+            <if test="lastLoginIp != null">last_login_ip=#{lastLoginIp,jdbcType=VARCHAR},</if>
+            <if test="lastLoginTime != null">last_login_time=#{lastLoginTime,jdbcType=TIMESTAMP},</if>
+            <if test="userLocate != null">user_locate=#{userLocate,jdbcType=VARCHAR},</if>
         </set>
         where user_id=#{userId,jdbcType=INTEGER}
     </update>
@@ -103,7 +107,7 @@
     <update id="updateUserPassword" parameterType="com.hurpods.springboot.hurpodsblog.pojo.User">
         update user
         <set>
-            <if test='userPsw != "" and userPsw != null'>
+            <if test='userPassword != "" and userPassword != null'>
                 user_password=#{userPassword,jdbcType=VARCHAR}
             </if>
         </set>

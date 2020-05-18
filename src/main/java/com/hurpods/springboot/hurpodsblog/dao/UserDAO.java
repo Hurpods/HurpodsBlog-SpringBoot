@@ -12,15 +12,17 @@ public interface UserDAO {
 
     User getUserById(@Param("userId") Integer userId);
 
-    User getUserByUsername(@Param("username")String username);
+    User getUserByUsername(@Param("username") String username);
 
     User getUserByOthers(@Param("value") String value);
 
     void deleteUserById(@Param("userId") Integer userId);
 
+    Integer deleteUserByUsername(@Param("userName") String username);
+
     void registerUser(User user);
 
-    void updateUserInfo(User user);
+    Integer updateUserInfo(User user);
 
-    void updateUserPassword(User user);
+    Integer updateUserPassword(User user);
 }

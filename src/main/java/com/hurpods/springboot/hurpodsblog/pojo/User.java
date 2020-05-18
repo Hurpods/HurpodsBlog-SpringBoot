@@ -31,9 +31,7 @@ public class User implements Serializable {
 
     private Date lastLoginTime;
 
-    private String province;
-
-    private String city;
+    private String userLocate;
 
     private Boolean enabled;
 
