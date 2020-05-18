@@ -1,5 +1,7 @@
 package com.hurpods.springboot.hurpodsblog.security.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
 import com.hurpods.springboot.hurpodsblog.security.constans.SecurityConstants;
 import com.hurpods.springboot.hurpodsblog.security.service.UserDetailsServiceImpl;
 import com.hurpods.springboot.hurpodsblog.security.utils.JwtTokenUtil;
@@ -15,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 //过滤器处理所有HTTP请求，并检查是否存在带有正确令牌的Authorization标头。例如，如果令牌未过期或签名密钥正确。
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -33,7 +36,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (token == null || !token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
             SecurityContextHolder.clearContext();
         } else {
-            UsernamePasswordAuthenticationToken authenticationToken = getAuthentication(token);
+            UsernamePasswordAuthenticationToken authenticationToken = getAuthentication(token,response);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
         chain.doFilter(request, response);
@@ -42,7 +45,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     /**
      * 获取用户认证信息 Authentication
      */
-    private UsernamePasswordAuthenticationToken getAuthentication(String authorization) {
+    private UsernamePasswordAuthenticationToken getAuthentication(String authorization,HttpServletResponse response) throws IOException {
         String token = authorization.replace(SecurityConstants.TOKEN_PREFIX, "");
         try {
             String username = JwtTokenUtil.getUsernameByToken(token);

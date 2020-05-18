@@ -9,6 +9,7 @@ import com.hurpods.springboot.hurpodsblog.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,5 +50,11 @@ public class AuthController {
         }
 
         return result;
+    }
+
+    @PostMapping("/authTime")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT','ROLE_MANAGER')")
+    public Result getAuthTime() {
+        return ResultFactory.buildSuccessResult("authSuccess");
     }
 }

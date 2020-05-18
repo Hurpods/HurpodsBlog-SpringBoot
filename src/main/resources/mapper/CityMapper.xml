@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hurpods.springboot.hurpodsblog.dao.CityDAO">
+    <resultMap id="CityResultMap" type="com.hurpods.springboot.hurpodsblog.pojo.Province">
+        <id column="code_p" property="code" jdbcType="VARCHAR"/>
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name_p" property="name" jdbcType="VARCHAR"/>
+        <collection property="cityList" ofType="com.hurpods.springboot.hurpodsblog.pojo.City">
+            <id column="code_c" property="code" jdbcType="VARCHAR"/>
+            <result column="id" property="id" jdbcType="VARCHAR"/>
+            <result column="name_c" property="name" jdbcType="VARCHAR"/>
+            <result column="code_p" property="codeP" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAllCity" resultMap="CityResultMap">
+        select province.*, city.*
+        from province,
+             city
+        where province.code_p=city.code_p
+    </select>
+</mapper>
