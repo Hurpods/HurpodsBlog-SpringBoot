@@ -2,7 +2,6 @@ package com.hurpods.springboot.hurpodsblog.service.impl;
 
 import com.hurpods.springboot.hurpodsblog.dao.UserDAO;
 import com.hurpods.springboot.hurpodsblog.dao.UserRoleRefDAO;
-import com.hurpods.springboot.hurpodsblog.dto.LoginRequest;
 import com.hurpods.springboot.hurpodsblog.dto.RegisterRequest;
 import com.hurpods.springboot.hurpodsblog.dto.UpdateRequest;
 import com.hurpods.springboot.hurpodsblog.pojo.User;

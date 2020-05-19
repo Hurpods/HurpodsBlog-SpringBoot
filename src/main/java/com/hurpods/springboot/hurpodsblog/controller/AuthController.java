@@ -57,4 +57,11 @@ public class AuthController {
     public Result getAuthTime() {
         return ResultFactory.buildSuccessResult("authSuccess");
     }
+
+    @PostMapping("/authBackStage")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT','ROLE_MANAGER')")
+    public Result authBackStage() {
+        System.out.println("request");
+        return ResultFactory.buildSuccessResult("authSuccess");
+    }
 }
