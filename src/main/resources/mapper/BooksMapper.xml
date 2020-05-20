@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.hurpods.springboot.hurpodsblog.dao.BooksDAO">
+
     <select id="getAllBooks" resultType="com.hurpods.springboot.hurpodsblog.pojo.Book">
         select *
         from book
+        order by book.id desc
     </select>
+
+    <select id="getAllCats" resultType="com.hurpods.springboot.hurpodsblog.pojo.Category">
+        select *
+        from category
+    </select>
+
+    <select id="getBooksByCatId" resultType="com.hurpods.springboot.hurpodsblog.pojo.Book">
+        select *
+        from book,
+             category
+        where book.cid = category.id
+          and book.cid = #{catId}
+        order by book.id desc
+    </select>
+
+    <select id="searchBooks" resultType="com.hurpods.springboot.hurpodsblog.pojo.Book">
+        select book.*
+        from book
+        where title like concat('%', #{keywords}, '%')
+           or author like concat('%', #{keywords}, '%')
+        order by book.id desc
+    </select>
+
 </mapper>

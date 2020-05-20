@@ -9,17 +9,26 @@ import java.io.File;
 
 @SpringBootConfiguration
 public class MyWebConfigurer implements WebMvcConfigurer {
+    private static final String BASE_PATH = "D:" + File.separator + "Project" + File.separator + "uploads" + File.separator;
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
-                .addResourceHandler("/file/**")
+                .addResourceHandler("/file/pic/**")
                 .addResourceLocations(
                         "file:"
-                                + "D:"
+                                + BASE_PATH
+                                + "img"
                                 + File.separator
-                                + "Project"
+                                + "contentPic"
                                 + File.separator
-                                + "uploads"
+                );
+        registry.addResourceHandler("/file/avatar/**")
+                .addResourceLocations(
+                        "file:"
+                                + BASE_PATH
+                                + "img"
+                                + File.separator
+                                + "avatar"
                                 + File.separator
                 );
     }

@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 @Component
 public class MyUtil {
+    private MyUtil(){}
+
     //从request中获取IP信息
     public static String getIpAddress(HttpServletRequest request) {
         String ipAddress = request.getHeader("x-forwarded-for");
