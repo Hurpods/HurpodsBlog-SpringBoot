@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class Category implements Serializable {
     private static final long serialVersionUID = -1909921654024783109L;
-    private Integer id;
-    private String name;
+    private Integer categoryId;
+    private String categoryName;
     List<Book> bookList;
 }

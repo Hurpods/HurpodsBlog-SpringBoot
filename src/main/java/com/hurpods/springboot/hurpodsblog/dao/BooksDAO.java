@@ -16,4 +16,8 @@ public interface BooksDAO {
     List<Book> getBooksByCatId(@Param("catId") Integer catId);
 
     List<Book> searchBooks(@Param("keywords") String keywords);
+
+    int insertBook(Book book);
+
+    int updateBook(Book book);
 }

@@ -31,6 +31,15 @@ public class MyWebConfigurer implements WebMvcConfigurer {
                                 + "avatar"
                                 + File.separator
                 );
+        registry.addResourceHandler("/file/cover/**")
+                .addResourceLocations(
+                        "file:"
+                                + BASE_PATH
+                                + "img"
+                                + File.separator
+                                + "cover"
+                                + File.separator
+                );
     }
 
     @Override

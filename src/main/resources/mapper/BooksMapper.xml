@@ -1,33 +1,71 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.hurpods.springboot.hurpodsblog.dao.BooksDAO">
+    <resultMap id="BookBaseResultMap" type="com.hurpods.springboot.hurpodsblog.pojo.Book">
+        <id column="book_id" property="bookId"/>
+        <result column="book_cover" property="bookCover"/>
+        <result column="book_title" property="bookTitle"/>
+        <result column="book_author" property="bookAuthor"/>
+        <result column="post_date" property="postDate"/>
+        <result column="book_press" property="bookPress"/>
+        <result column="book_abs" property="bookAbs"/>
+        <association property="category" javaType="com.hurpods.springboot.hurpodsblog.pojo.Category">
+            <id column="category_id" property="categoryId"/>
+            <result column="category_name" property="categoryName"/>
+        </association>
+    </resultMap>
+    <resultMap id="CatBaseMap" type="com.hurpods.springboot.hurpodsblog.pojo.Category">
+        <id column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+    </resultMap>
 
-    <select id="getAllBooks" resultType="com.hurpods.springboot.hurpodsblog.pojo.Book">
-        select *
-        from book
-        order by book.id desc
+    <select id="getAllBooks" resultMap="BookBaseResultMap">
+        select book.*, cat.*
+        from book,
+             category cat
+        where book.cid = cat.category_id
+        order by book.book_id desc
     </select>
 
-    <select id="getAllCats" resultType="com.hurpods.springboot.hurpodsblog.pojo.Category">
+    <select id="getAllCats" resultMap="CatBaseMap">
         select *
         from category
     </select>
 
-    <select id="getBooksByCatId" resultType="com.hurpods.springboot.hurpodsblog.pojo.Book">
-        select *
+    <select id="getBooksByCatId" resultMap="BookBaseResultMap">
+        select book.*, cat.*
         from book,
-             category
-        where book.cid = category.id
+             category cat
+        where book.cid = cat.category_id
           and book.cid = #{catId}
-        order by book.id desc
+        order by book.book_id desc
     </select>
 
-    <select id="searchBooks" resultType="com.hurpods.springboot.hurpodsblog.pojo.Book">
-        select book.*
-        from book
-        where title like concat('%', #{keywords}, '%')
-           or author like concat('%', #{keywords}, '%')
-        order by book.id desc
+    <select id="searchBooks" resultMap="BookBaseResultMap">
+        select book.*, cat.*
+        from book,
+             category cat
+        where book_title like concat('%', #{keywords}, '%')
+           or book_author like concat('%', #{keywords}, '%')
+            and book.cid = cat.category_id
+        order by book.book_id desc
     </select>
 
+    <insert id="insertBook" useGeneratedKeys="true" keyProperty="bookId"
+            parameterType="com.hurpods.springboot.hurpodsblog.pojo.Book">
+        insert into book(book_cover, book_title, book_author, post_date, book_press, book_abs, cid)
+        VALUES (#{bookCover}, #{bookTitle}, #{bookAuthor}, #{postDate}, #{bookPress}, #{bookAbs}, #{cid})
+    </insert>
+
+    <update id="updateBook" parameterType="com.hurpods.springboot.hurpodsblog.pojo.Book">
+        update book
+        set book_cover=#{bookCover},
+            book_title=#{bookTitle},
+            book_author=#{bookAuthor},
+            post_date=#{postDate},
+            book_press=#{bookPress},
+            book_abs=#{bookAbs},
+            cid=#{cid}
+        where book_id = #{bookId}
+    </update>
 </mapper>
