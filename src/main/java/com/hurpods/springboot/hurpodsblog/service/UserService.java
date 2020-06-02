@@ -26,6 +26,8 @@ public interface UserService {
 
     User registerUser(RegisterRequest registerRequest, HttpServletRequest request);
 
+    Result updateUser(UpdateRequest updateRequest, Integer userId);
+
     Result updateUserInfo(UpdateRequest updateRequest, String username);
 
     Result updateUserPassword(UpdateRequest updateRequest, String username);

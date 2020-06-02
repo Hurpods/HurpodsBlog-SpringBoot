@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hurpods.springboot.hurpodsblog.dao.RoleDAO">
+    <resultMap id="RoleResultMap" type="com.hurpods.springboot.hurpodsblog.pojo.Role">
+        <id column="role_id" property="roleId"/>
+        <result column="role_name" property="roleName"/>
+        <result column="role_description" property="roleDescription"/>
+    </resultMap>
+
+    <select id="getAllRoles" resultMap="RoleResultMap">
+        select *
+        from role
+    </select>
+</mapper>

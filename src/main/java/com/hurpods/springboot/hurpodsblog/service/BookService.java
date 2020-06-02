@@ -18,4 +18,6 @@ public interface BookService {
     Result insertBook(Book requestBook);
 
     Result updateBook(Book requestBook);
+
+    Result deleteBook(Integer bookId);
 }

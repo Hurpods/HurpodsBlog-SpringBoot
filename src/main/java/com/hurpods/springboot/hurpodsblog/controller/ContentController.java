@@ -33,6 +33,12 @@ public class ContentController {
         return book.getBookId() == null ? bookService.insertBook(book) : bookService.updateBook(book);
     }
 
+    @DeleteMapping("/books/{bookId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public Result deleteBook(@PathVariable Integer bookId) {
+        return bookService.deleteBook(bookId);
+    }
+
     @GetMapping("/cats")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Result getAllCats() {

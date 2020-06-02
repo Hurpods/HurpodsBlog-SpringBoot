@@ -54,6 +54,13 @@ public class BookServiceImpl implements BookService {
                 ResultFactory.buildFailureResult("未知错误，请稍后重试");
     }
 
+    @Override
+    public Result deleteBook(Integer bookId) {
+        return booksDAO.deleteBook(bookId) == 1 ?
+                ResultFactory.buildSuccessResult("删除图书成功") :
+                ResultFactory.buildFailureResult("未知错误，请稍后重试");
+    }
+
     private Book escapeBook(Book book) {
         book.setBookCover(HtmlUtil.escape(book.getBookCover()));
         book.setBookTitle(HtmlUtil.escape(book.getBookTitle()));

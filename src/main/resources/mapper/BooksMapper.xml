@@ -68,4 +68,10 @@
             cid=#{cid}
         where book_id = #{bookId}
     </update>
+
+    <delete id="deleteBook">
+        delete
+        from book
+        where book_id = #{bookId}
+    </delete>
 </mapper>

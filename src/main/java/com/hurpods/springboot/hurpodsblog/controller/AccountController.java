@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class AccountController {
@@ -18,6 +20,15 @@ public class AccountController {
     UserService userService;
     @Autowired
     CityService cityService;
+
+    @GetMapping("/users")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
+    public Result getAllUser() {
+        List<User> userList = userService.getAllUser();
+        return userList.size() != 0 ?
+                ResultFactory.buildSuccessResult(userList) :
+                ResultFactory.buildCustomFailureResult(ResultCode.RESULT_DATA_NONE, "无数据");
+    }
 
     @GetMapping("/user/{username}")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT','ROLE_MANAGER')")
@@ -29,6 +40,13 @@ public class AccountController {
         } else {
             return ResultFactory.buildFailureResult(ResultCode.USER_NOT_EXIST);
         }
+    }
+
+    @PutMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
+    public Result updateUser(@PathVariable String userId,@RequestBody UpdateRequest user){
+        System.out.println(user);
+        return ResultFactory.buildFailureResult("");
     }
 
     @GetMapping("/city")

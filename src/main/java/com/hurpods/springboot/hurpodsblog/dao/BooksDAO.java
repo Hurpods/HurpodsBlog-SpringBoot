@@ -20,4 +20,6 @@ public interface BooksDAO {
     int insertBook(Book book);
 
     int updateBook(Book book);
+
+    int deleteBook(@Param("bookId") Integer bookId);
 }

@@ -119,6 +119,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Result updateUser(UpdateRequest updateRequest, Integer userId) {
+        User user=userDAO.getUserById(userId);
+        user.setUserNickName(updateRequest.getNickName());
+        user.setUserName(updateRequest.getUserName());
+        user.setUserLocate(updateRequest.getLocate());
+        user.setUserEmail(updateRequest.getEmail());
+        user.setUserTel(updateRequest.getTelephone());
+
+
+
+        return null;
+    }
+
+    @Override
     public Result updateUserInfo(UpdateRequest updateRequest, String username) {
         User user = userDAO.getUserByUsername(username);
 
