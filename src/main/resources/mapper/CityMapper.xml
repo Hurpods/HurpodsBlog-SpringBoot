@@ -17,6 +17,14 @@
         select province.*, city.*
         from province,
              city
-        where province.code_p=city.code_p
+        where province.code_p = city.code_p
+    </select>
+
+    <select id="getCityByCode" resultMap="CityResultMap">
+        select province.*, city.*
+        from province,
+             city
+        where province.code_p = city.code_p
+          and province.code_p = #{code}
     </select>
 </mapper>

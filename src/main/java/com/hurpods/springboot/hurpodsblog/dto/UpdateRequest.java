@@ -8,7 +8,7 @@ public class UpdateRequest {
     private String nickName;
     private String telephone;
     private String email;
-    private String locate;
+    private String[] locate;
     private String roles;
     private String oldPassword;
     private String newPassword;

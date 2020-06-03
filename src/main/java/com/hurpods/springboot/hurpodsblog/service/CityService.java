@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CityService {
     List<Province> getAllCity();
+
+    List<String> getCityNameByCode(String provinceCode,String cityCode);
 }

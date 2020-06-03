@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hurpods.springboot.hurpodsblog.dao.CityUserRefDAO">
+    <resultMap id="BaseMap" type="com.hurpods.springboot.hurpodsblog.pojo.CityUserRef">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="city_name" property="cityName"/>
+    </resultMap>
+
+    <insert id="insertCUR" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.hurpods.springboot.hurpodsblog.pojo.CityUserRef">
+        insert into city_user (province_code, city_code, user_id, province_name, city_name)
+        VALUES (#{provinceCode}, #{cityCode}, #{userId}, #{provinceName}, #{cityName})
+    </insert>
+
+    <update id="updateCUR" parameterType="com.hurpods.springboot.hurpodsblog.pojo.CityUserRef">
+        update city_user
+        set province_code=#{provinceCode},
+            city_code=#{cityCode},
+            province_name=#{provinceName},
+            city_name=#{cityName}
+        where user_id = #{userId}
+    </update>
+
+    <select id="getCURByUserId" resultMap="BaseMap">
+        select *
+        from city_user
+        where user_id = #{userId}
+    </select>
+</mapper>

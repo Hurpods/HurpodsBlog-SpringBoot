@@ -1,14 +1,17 @@
 package com.hurpods.springboot.hurpodsblog.service.impl;
 
+import com.hurpods.springboot.hurpodsblog.dao.CityUserRefDAO;
 import com.hurpods.springboot.hurpodsblog.dao.UserDAO;
 import com.hurpods.springboot.hurpodsblog.dao.UserRoleRefDAO;
 import com.hurpods.springboot.hurpodsblog.dto.RegisterRequest;
 import com.hurpods.springboot.hurpodsblog.dto.UpdateRequest;
+import com.hurpods.springboot.hurpodsblog.pojo.CityUserRef;
 import com.hurpods.springboot.hurpodsblog.pojo.User;
 import com.hurpods.springboot.hurpodsblog.pojo.UserRoleRef;
 import com.hurpods.springboot.hurpodsblog.result.Result;
 import com.hurpods.springboot.hurpodsblog.result.ResultCode;
 import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
+import com.hurpods.springboot.hurpodsblog.service.CityService;
 import com.hurpods.springboot.hurpodsblog.service.UserService;
 import com.hurpods.springboot.hurpodsblog.utils.MyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,10 @@ public class UserServiceImpl implements UserService {
     UserDAO userDAO;
     @Autowired
     UserRoleRefDAO urrDAO;
+    @Autowired
+    CityUserRefDAO curDAO;
+    @Autowired
+    CityService cityService;
 
     @Override
     public List<User> getAllUser() {
@@ -120,13 +127,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result updateUser(UpdateRequest updateRequest, Integer userId) {
-        User user=userDAO.getUserById(userId);
+        User user = userDAO.getUserById(userId);
         user.setUserNickName(updateRequest.getNickName());
         user.setUserName(updateRequest.getUserName());
-        user.setUserLocate(updateRequest.getLocate());
+
         user.setUserEmail(updateRequest.getEmail());
         user.setUserTel(updateRequest.getTelephone());
-
 
 
         return null;
@@ -136,9 +142,27 @@ public class UserServiceImpl implements UserService {
     public Result updateUserInfo(UpdateRequest updateRequest, String username) {
         User user = userDAO.getUserByUsername(username);
 
+        CityUserRef cur = new CityUserRef();
+        String provinceCode = updateRequest.getLocate()[0];
+        String cityCode = updateRequest.getLocate()[1];
+        cur.setProvinceCode(provinceCode);
+        cur.setCityCode(cityCode);
+
+        List<String> cityName = cityService.getCityNameByCode(provinceCode, cityCode);
+        cur.setProvinceName(cityName.get(0));
+        cur.setCityName(cityName.get(1));
+        cur.setUserId(user.getUserId());
+
+        if (curDAO.getCURByUserId(user.getUserId()) != null) {
+            curDAO.updateCUR(cur);
+        } else {
+            curDAO.insertCUR(cur);
+        }
+
+
         user.setUserNickName(updateRequest.getNickName().equals("") ? user.getUserNickName() : updateRequest.getNickName());
         user.setUserTel(updateRequest.getTelephone().equals("") ? user.getUserTel() : updateRequest.getTelephone());
-        user.setUserLocate(updateRequest.getLocate() == null ? user.getUserLocate() : updateRequest.getLocate());
+        user.setLocateRef(cur.getId());
 
         if (!updateRequest.getEmail().equals("")) {
             Result result = validateEmail(updateRequest.getEmail());
