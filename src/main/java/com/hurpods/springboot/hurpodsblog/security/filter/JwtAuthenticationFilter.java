@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             printWriter.write(objectMapper.writeValueAsString(ResultFactory.buildFailureResult("用户名或密码错误")));
             printWriter.flush();
             printWriter.close();
-            System.out.println(e.toString());
+            System.out.println(e.getMessage());
             return null;
         }
     }

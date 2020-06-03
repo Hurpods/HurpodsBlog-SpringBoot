@@ -44,9 +44,8 @@ public class AccountController {
 
     @PutMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
-    public Result updateUser(@PathVariable String userId,@RequestBody UpdateRequest user){
-        System.out.println(user);
-        return ResultFactory.buildFailureResult("");
+    public Result updateUser(@PathVariable Integer userId,@RequestBody UpdateRequest user){
+        return userService.updateUser(user,userId);
     }
 
     @GetMapping("/city")

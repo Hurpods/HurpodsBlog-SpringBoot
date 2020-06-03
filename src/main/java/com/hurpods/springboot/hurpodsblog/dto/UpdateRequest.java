@@ -9,7 +9,7 @@ public class UpdateRequest {
     private String telephone;
     private String email;
     private String[] locate;
-    private String roles;
+    private Integer roles;
     private String oldPassword;
     private String newPassword;
     private String confirmPassword;

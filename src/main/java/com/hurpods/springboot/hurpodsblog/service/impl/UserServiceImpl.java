@@ -31,7 +31,7 @@ import static com.hurpods.springboot.hurpodsblog.utils.MyUtil.regexMatch;
 @Service
 public class UserServiceImpl implements UserService {
     private static final String BASE_URL = "http://localhost:8090";
-    private static final String DEFAULT_AVATAR = "/file/img/avatar/0.png";
+    private static final String DEFAULT_AVATAR = "/file/avatar/0.png";
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -47,7 +47,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUser() {
-        return userDAO.getAllUser();
+        List<User> userList = userDAO.getAllUser();
+        String[] locate = new String[2];
+        for (User user : userList) {
+            locate[0] = user.getUserLocation().getProvinceCode();
+            locate[1] = user.getUserLocation().getCityCode();
+            user.setLocate(locate);
+        }
+        return userList;
     }
 
     @Override
@@ -117,6 +124,14 @@ public class UserServiceImpl implements UserService {
             userRoleRef.setUserId(user.getUserId());
             userRoleRef.setRoleId(2);
 
+            CityUserRef cityUserRef=new CityUserRef();
+            cityUserRef.setUserId(user.getUserId());
+            cityUserRef.setCityCode("1");
+            cityUserRef.setProvinceCode("1");
+            cityUserRef.setProvinceName("-");
+            cityUserRef.setCityName("未选择");
+            curDAO.insertCUR(cityUserRef);
+
             urrDAO.createUserRoleRef(userRoleRef);
 
             return userDAO.getUserByUsername(registerRequest.getUsername());
@@ -128,14 +143,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result updateUser(UpdateRequest updateRequest, Integer userId) {
         User user = userDAO.getUserById(userId);
-        user.setUserNickName(updateRequest.getNickName());
-        user.setUserName(updateRequest.getUserName());
+        if (updateRequest.getTelephone().equals(user.getUserTel())) {
+            updateRequest.setTelephone("");
+        }
+        if (updateRequest.getEmail().equals(user.getUserEmail())) {
+            updateRequest.setEmail("");
+        }
+        Result r = updateUserInfo(updateRequest, user.getUserName());
 
-        user.setUserEmail(updateRequest.getEmail());
-        user.setUserTel(updateRequest.getTelephone());
+        UserRoleRef urr = urrDAO.getURRByUserId(userId);
+        urr.setRoleId(updateRequest.getRoles());
+        Integer num = urrDAO.updateURR(urr);
 
-
-        return null;
+        return r.getCode() + num == 2 ?
+                ResultFactory.buildSuccessResult("修改成功") :
+                ResultFactory.buildFailureResult("发生错误，请检查输入后重试");
     }
 
     @Override
@@ -161,8 +183,15 @@ public class UserServiceImpl implements UserService {
 
 
         user.setUserNickName(updateRequest.getNickName().equals("") ? user.getUserNickName() : updateRequest.getNickName());
-        user.setUserTel(updateRequest.getTelephone().equals("") ? user.getUserTel() : updateRequest.getTelephone());
-        user.setLocateRef(cur.getId());
+
+        if (!updateRequest.getTelephone().equals("")) {
+            Result result = validateTelephone(updateRequest.getTelephone());
+            if (result.getCode() == 1) {
+                user.setUserTel(updateRequest.getTelephone());
+            } else {
+                return result;
+            }
+        }
 
         if (!updateRequest.getEmail().equals("")) {
             Result result = validateEmail(updateRequest.getEmail());

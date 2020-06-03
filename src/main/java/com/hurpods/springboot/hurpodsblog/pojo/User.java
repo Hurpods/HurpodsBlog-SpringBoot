@@ -31,11 +31,10 @@ public class User implements Serializable {
 
     private Date lastLoginTime;
 
-    private Integer locateRef;
 
     private CityUserRef userLocation;
 
-    private Integer[] locate = new Integer[]{};
+    private String[] locate = new String[2];
 
     private Boolean enabled;
 
