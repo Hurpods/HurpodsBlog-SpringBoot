@@ -37,4 +37,6 @@ public interface UserService {
     Result validateTelephone(String telephone);
 
     Result validateEmail(String email);
+
+    Integer getNumber();
 }

@@ -45,4 +45,6 @@ public class User implements Serializable {
         roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName())));
         return authorities;
     }
+
+    private Integer size;
 }

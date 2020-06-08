@@ -1,5 +1,6 @@
 package com.hurpods.springboot.hurpodsblog.controller;
 
+import com.github.pagehelper.PageHelper;
 import com.hurpods.springboot.hurpodsblog.dto.UpdateRequest;
 import com.hurpods.springboot.hurpodsblog.pojo.User;
 import com.hurpods.springboot.hurpodsblog.result.Result;
@@ -11,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -23,10 +27,18 @@ public class AccountController {
 
     @GetMapping("/users")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
-    public Result getAllUser() {
+    public Result getAllUser(Integer pageNum) {
+        PageHelper.startPage(pageNum,12);
         List<User> userList = userService.getAllUser();
+
+        Integer size=userService.getNumber();
+
+        Map<String,Object>result=new HashMap<>();
+        result.put("pageSize",size);
+        result.put("userList",userList);
+
         return userList.size() != 0 ?
-                ResultFactory.buildSuccessResult(userList) :
+                ResultFactory.buildSuccessResult(result) :
                 ResultFactory.buildCustomFailureResult(ResultCode.RESULT_DATA_NONE, "无数据");
     }
 

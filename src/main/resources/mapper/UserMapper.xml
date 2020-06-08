@@ -30,6 +30,10 @@
 
     </resultMap>
 
+    <select id="getNumber" resultType="java.lang.Integer">
+        select count(*) from user
+    </select>
+
     <!--  获取所有用户  -->
     <select id="getAllUser" resultMap="UserResultMap">
         select user.*, role.*, cu.*
@@ -68,11 +72,11 @@
     </select>
 
     <select id="getUserByOthers" resultMap="UserResultMap">
-        select user.*, role.*,cu.*
+        select user.*, role.*, cu.*
         from user,
              role,
              user_role ur,
-            city_user cu
+             city_user cu
         where user_email = #{value,jdbcType=VARCHAR}
            OR user_tel = #{value,jdbcType=VARCHAR}
             and user.user_id = ur.user_id

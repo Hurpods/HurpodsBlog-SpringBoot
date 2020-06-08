@@ -282,6 +282,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public Integer getNumber() {
+        return userDAO.getNumber();
+    }
+
     private String getSalt(Object object) throws Exception {
         Class cl = Class.forName(object.getClass().getName());
         Method getUsername = cl.getMethod("getUsername");

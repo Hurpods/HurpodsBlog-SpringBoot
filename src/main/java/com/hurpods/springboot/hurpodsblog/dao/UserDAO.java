@@ -25,4 +25,6 @@ public interface UserDAO {
     Integer updateUserInfo(User user);
 
     Integer updateUserPassword(User user);
+
+    Integer getNumber();
 }
