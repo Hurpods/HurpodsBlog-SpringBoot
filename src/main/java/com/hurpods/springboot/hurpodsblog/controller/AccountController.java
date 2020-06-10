@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,16 +25,16 @@ public class AccountController {
     CityService cityService;
 
     @GetMapping("/users")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Result getAllUser(Integer pageNum) {
-        PageHelper.startPage(pageNum,12);
+        PageHelper.startPage(pageNum, 12);
         List<User> userList = userService.getAllUser();
 
-        Integer size=userService.getNumber();
+        Integer size = userService.getNumber();
 
-        Map<String,Object>result=new HashMap<>();
-        result.put("pageSize",size);
-        result.put("userList",userList);
+        Map<String, Object> result = new HashMap<>();
+        result.put("pageSize", size);
+        result.put("userList", userList);
 
         return userList.size() != 0 ?
                 ResultFactory.buildSuccessResult(result) :
@@ -43,7 +42,7 @@ public class AccountController {
     }
 
     @GetMapping("/user/{username}")
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT','ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT')")
     public Result getUserDetail(@PathVariable String username) {
         User user = userService.getUserByUsername(username);
         if (user != null) {
@@ -54,32 +53,50 @@ public class AccountController {
         }
     }
 
+    @GetMapping("/user/search/{keywords}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public Result fuzzySearch(@PathVariable String keywords) {
+        List<User> userList = userService.fuzzySearch(keywords);
+        return userList.size()!=0?
+                ResultFactory.buildSuccessResult(userList):
+                ResultFactory.buildFailureResult(ResultCode.RESULT_DATA_NONE);
+    }
+
     @PutMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
-    public Result updateUser(@PathVariable Integer userId,@RequestBody UpdateRequest user){
-        return userService.updateUser(user,userId);
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public Result updateUser(@PathVariable Integer userId, @RequestBody UpdateRequest user) {
+        return userService.updateUser(user, userId);
+    }
+
+    @GetMapping("/user/special")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public Result getSpecial() {
+        List<User> specialList = userService.getSpecial();
+        return specialList.size() != 0 ?
+                ResultFactory.buildSuccessResult(specialList) :
+                ResultFactory.buildCustomFailureResult(ResultCode.RESULT_DATA_NONE, "不存在特殊用户");
     }
 
     @GetMapping("/city")
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT','ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT')")
     public Result getAllCity() {
         return ResultFactory.buildSuccessResult(cityService.getAllCity());
     }
 
     @PostMapping("/updateInfo/{username}")
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT','ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT')")
     public Result updateUser(@RequestBody UpdateRequest updateRequest, @PathVariable String username) {
         return userService.updateUserInfo(updateRequest, username);
     }
 
     @PostMapping("/updatePassword/{username}")
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT','ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT')")
     public Result updatePassword(@RequestBody UpdateRequest updateRequest, @PathVariable String username) {
         return userService.updateUserPassword(updateRequest, username);
     }
 
     @PostMapping("/deleteUser/{username}")
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_JUDGEMENT','ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_JUDGEMENT')")
     public Result deleteUser(@RequestBody UpdateRequest updateRequest, @PathVariable String username) {
         return userService.deleteUserByUsername(updateRequest.getOldPassword(), username);
     }

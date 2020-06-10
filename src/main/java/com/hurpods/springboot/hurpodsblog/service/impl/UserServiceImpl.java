@@ -287,6 +287,16 @@ public class UserServiceImpl implements UserService {
         return userDAO.getNumber();
     }
 
+    @Override
+    public List<User> getSpecial() {
+        return userDAO.getSpecial();
+    }
+
+    @Override
+    public List<User> fuzzySearch(String keywords) {
+        return userDAO.fuzzySearch(keywords);
+    }
+
     private String getSalt(Object object) throws Exception {
         Class cl = Class.forName(object.getClass().getName());
         Method getUsername = cl.getMethod("getUsername");

@@ -27,4 +27,8 @@ public interface UserDAO {
     Integer updateUserPassword(User user);
 
     Integer getNumber();
+
+    List<User> getSpecial();
+
+    List<User> fuzzySearch(@Param("keywords") String keywords);
 }

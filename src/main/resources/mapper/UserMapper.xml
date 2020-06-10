@@ -31,7 +31,8 @@
     </resultMap>
 
     <select id="getNumber" resultType="java.lang.Integer">
-        select count(*) from user
+        select count(*)
+        from user
     </select>
 
     <!--  获取所有用户  -->
@@ -84,6 +85,33 @@
             and user.user_id = cu.user_id
     </select>
 
+    <select id="getSpecial" resultMap="UserResultMap">
+        select user.*, role.*, cu.*
+        from user,
+             role,
+             user_role ur,
+             city_user cu
+        where user.user_id = ur.user_id
+          and role.role_id = ur.role_id
+          and user.user_id = cu.user_id
+          and ur.role_id != 2
+    </select>
+
+    <select id="fuzzySearch" resultMap="UserResultMap">
+        select user.*, role.*, cu.*
+        from user,
+             role,
+             user_role ur,
+             city_user cu
+        where user.user_id = ur.user_id
+            and role.role_id = ur.role_id
+            and user.user_id = cu.user_id
+            and user.user_name like concat('%', #{keywords}, '%')
+           or user.user_nick_name like concat('%', #{keywords}, '%')
+           or cast(user.user_id as CHAR) like concat('%', #{keywords}, '%')
+           or cast(user.user_tel as CHAR) like concat('%', #{keywords}, '%')
+           or user.user_email like concat('%', #{keywords}, '%')
+    </select>
     <!--  注销用户  -->
     <delete id="deleteUserById">
         delete
