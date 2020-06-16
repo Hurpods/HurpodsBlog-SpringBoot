@@ -31,4 +31,6 @@ public interface UserDAO {
     List<User> getSpecial();
 
     List<User> fuzzySearch(@Param("keywords") String keywords);
+
+    Integer banUser(@Param("idList") List<Integer> idList);
 }

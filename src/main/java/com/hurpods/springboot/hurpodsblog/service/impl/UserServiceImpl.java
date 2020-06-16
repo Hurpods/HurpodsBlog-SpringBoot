@@ -297,6 +297,11 @@ public class UserServiceImpl implements UserService {
         return userDAO.fuzzySearch(keywords);
     }
 
+    @Override
+    public Integer banUser(List<Integer> idList) {
+        return userDAO.banUser(idList);
+    }
+
     private String getSalt(Object object) throws Exception {
         Class cl = Class.forName(object.getClass().getName());
         Method getUsername = cl.getMethod("getUsername");

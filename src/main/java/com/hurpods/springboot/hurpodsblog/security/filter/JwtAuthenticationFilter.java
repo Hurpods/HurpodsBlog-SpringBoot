@@ -2,12 +2,15 @@ package com.hurpods.springboot.hurpodsblog.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hurpods.springboot.hurpodsblog.dto.LoginRequest;
+import com.hurpods.springboot.hurpodsblog.result.ResultCode;
 import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
 import com.hurpods.springboot.hurpodsblog.security.constans.SecurityConstants;
 import com.hurpods.springboot.hurpodsblog.security.entity.JwtUser;
 import com.hurpods.springboot.hurpodsblog.security.utils.JwtTokenUtil;
 import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -43,12 +46,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(), loginRequest.getPassword());
             return authenticationManager.authenticate(authentication);
-        } catch (Exception e) {
+        } catch (BadCredentialsException e) {
             PrintWriter printWriter = response.getWriter();
-            printWriter.write(objectMapper.writeValueAsString(ResultFactory.buildFailureResult("用户名或密码错误")));
+            printWriter.write(objectMapper.writeValueAsString(ResultFactory.buildFailureResult("wrong password or username")));
             printWriter.flush();
             printWriter.close();
-            System.out.println(e.getMessage());
+            return null;
+        } catch (DisabledException e) {
+            PrintWriter printWriter = response.getWriter();
+            printWriter.write(objectMapper.writeValueAsString(ResultFactory.buildCustomFailureResult(ResultCode.USER_ACCOUNT_FORBIDDEN, "user is disabled")));
+            printWriter.flush();
+            printWriter.close();
             return null;
         }
     }
@@ -72,7 +80,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             //写入用户基本信息
             printWriter.write(mapper.writeValueAsString(ResultFactory.buildSuccessResult(jwtUser)));
         } else {
-            printWriter.write(mapper.writeValueAsString(ResultFactory.buildFailureResult("该账号已经被封停，禁止使用")));
+            printWriter.write(mapper.writeValueAsString(ResultFactory.buildCustomFailureResult(ResultCode.USER_ACCOUNT_FORBIDDEN, "该账号已经被封停，请联系管理员")));
         }
 
         printWriter.flush();

@@ -162,4 +162,11 @@
         where user_id=#{userId,jdbcType=INTEGER}
     </update>
 
+    <!--  ban人  -->
+    <update id="banUser">
+        update user set enabled=0 where user_id in
+        <foreach collection="idList" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

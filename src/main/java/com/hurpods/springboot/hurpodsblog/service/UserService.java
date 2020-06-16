@@ -43,4 +43,6 @@ public interface UserService {
     List<User> getSpecial();
 
     List<User> fuzzySearch(@Param("keywords") String keywords);
+
+    Integer banUser(List<Integer> idList);
 }

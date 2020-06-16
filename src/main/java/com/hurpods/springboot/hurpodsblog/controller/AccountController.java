@@ -1,5 +1,9 @@
 package com.hurpods.springboot.hurpodsblog.controller;
 
+
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.hurpods.springboot.hurpodsblog.dto.UpdateRequest;
 import com.hurpods.springboot.hurpodsblog.pojo.User;
@@ -57,9 +61,18 @@ public class AccountController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Result fuzzySearch(@PathVariable String keywords) {
         List<User> userList = userService.fuzzySearch(keywords);
-        return userList.size()!=0?
-                ResultFactory.buildSuccessResult(userList):
+        return userList.size() != 0 ?
+                ResultFactory.buildSuccessResult(userList) :
                 ResultFactory.buildFailureResult(ResultCode.RESULT_DATA_NONE);
+    }
+
+    @PutMapping("/user/ban")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_JUDGEMENT')")
+    public Result banUser(@RequestBody String ids) {
+        JSONObject json = new JSONObject(ids);
+        List<Integer> idList = (List<Integer>) json.get("ids");
+        Integer res = userService.banUser(idList);
+        return res > 0 ? ResultFactory.buildSuccessResult(res) : ResultFactory.buildFailureResult("发生未知错误");
     }
 
     @PutMapping("/user/{userId}")
@@ -68,12 +81,17 @@ public class AccountController {
         return userService.updateUser(user, userId);
     }
 
-    @GetMapping("/user/special")
+    @GetMapping("/specialUser")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public Result getSpecial() {
+    public Result getSpecial(Integer pageNum) {
+        PageHelper.startPage(pageNum, 10);
         List<User> specialList = userService.getSpecial();
+        Integer size = specialList.size();
+        Map<String, Object> map = new HashMap<>();
+        map.put("specialList", specialList);
+        map.put("specialSize", size);
         return specialList.size() != 0 ?
-                ResultFactory.buildSuccessResult(specialList) :
+                ResultFactory.buildSuccessResult(map) :
                 ResultFactory.buildCustomFailureResult(ResultCode.RESULT_DATA_NONE, "不存在特殊用户");
     }
 
