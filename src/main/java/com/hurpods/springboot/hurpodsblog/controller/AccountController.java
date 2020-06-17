@@ -2,8 +2,6 @@ package com.hurpods.springboot.hurpodsblog.controller;
 
 
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.hurpods.springboot.hurpodsblog.dto.UpdateRequest;
 import com.hurpods.springboot.hurpodsblog.pojo.User;
@@ -31,8 +29,11 @@ public class AccountController {
     @GetMapping("/users")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Result getAllUser(Integer pageNum) {
-        PageHelper.startPage(pageNum, 12);
-        List<User> userList = userService.getAllUser();
+        List<User> userList;
+        if (pageNum != null) {
+            PageHelper.startPage(pageNum, 12);
+        }
+        userList = userService.getAllUser();
 
         Integer size = userService.getNumber();
 
@@ -45,10 +46,16 @@ public class AccountController {
                 ResultFactory.buildCustomFailureResult(ResultCode.RESULT_DATA_NONE, "无数据");
     }
 
-    @GetMapping("/user/{username}")
+    @GetMapping("/user/{param}")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT')")
-    public Result getUserDetail(@PathVariable String username) {
-        User user = userService.getUserByUsername(username);
+    public Result getUserDetail(@PathVariable String param) {
+        User user;
+        try {
+            Integer userId = Integer.parseInt(param);
+            user = userService.getUserById(userId);
+        } catch (Exception e) {
+            user = userService.getUserByUsername(param);
+        }
         if (user != null) {
             user.setUserPassword(null);
             return ResultFactory.buildSuccessResult(user);
@@ -101,19 +108,19 @@ public class AccountController {
         return ResultFactory.buildSuccessResult(cityService.getAllCity());
     }
 
-    @PostMapping("/updateInfo/{username}")
+    @PostMapping("/user/update/{username}")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT')")
     public Result updateUser(@RequestBody UpdateRequest updateRequest, @PathVariable String username) {
         return userService.updateUserInfo(updateRequest, username);
     }
 
-    @PostMapping("/updatePassword/{username}")
+    @PostMapping("/user/updatePassword/{username}")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT')")
     public Result updatePassword(@RequestBody UpdateRequest updateRequest, @PathVariable String username) {
         return userService.updateUserPassword(updateRequest, username);
     }
 
-    @PostMapping("/deleteUser/{username}")
+    @PostMapping("/user/delete/{username}")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_JUDGEMENT')")
     public Result deleteUser(@RequestBody UpdateRequest updateRequest, @PathVariable String username) {
         return userService.deleteUserByUsername(updateRequest.getOldPassword(), username);

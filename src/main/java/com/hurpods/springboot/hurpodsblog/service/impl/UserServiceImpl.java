@@ -47,14 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUser() {
-        List<User> userList = userDAO.getAllUser();
-        String[] locate = new String[2];
-        for (User user : userList) {
-            locate[0] = user.getUserLocation().getProvinceCode();
-            locate[1] = user.getUserLocation().getCityCode();
-            user.setLocate(locate);
-        }
-        return userList;
+        return userDAO.getAllUser();
     }
 
     @Override
