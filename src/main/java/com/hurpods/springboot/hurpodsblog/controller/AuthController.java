@@ -32,7 +32,6 @@ public class AuthController {
     @PostMapping("/register")
     public Result registerUser(RegisterRequest registerRequest, HttpServletRequest request) throws Exception {
         User user = userService.registerUser(registerRequest, request);
-        System.out.println(user);
         if (user != null) {
             return ResultFactory.buildSuccessResult(user);
         } else {
@@ -73,7 +72,6 @@ public class AuthController {
     @PostMapping("/authBackStage")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR','ROLE_JUDGEMENT','ROLE_MANAGER')")
     public Result authBackStage() {
-        System.out.println("request");
         return ResultFactory.buildSuccessResult("authSuccess");
     }
 }

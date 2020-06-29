@@ -13,7 +13,6 @@
         <result column="register_time" property="registerTime" jdbcType="TIMESTAMP"/>
         <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP"/>
         <result column="enabled" property="enabled" jdbcType="TINYINT"/>
-
         <association property="userLocation" javaType="com.hurpods.springboot.hurpodsblog.pojo.CityUserRef">
             <id column="id" property="id"/>
             <result column="user_id" property="userId"/>

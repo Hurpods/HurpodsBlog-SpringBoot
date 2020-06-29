@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hurpods.springboot.hurpodsblog.dao.ContentDAO">
+    <resultMap id="ReporterBaseResultMap" type="com.hurpods.springboot.hurpodsblog.pojo.Reporter">
+        <id column="reporter_id" jdbcType="INTEGER" property="reporterId"/>
+        <result column="reporter_title" jdbcType="VARCHAR" property="reporterTitle"/>
+        <result column="reporter_content" jdbcType="VARCHAR" property="reporterContent"/>
+        <result column="book_id" jdbcType="INTEGER" property="bookId"/>
+        <result column="book_rate" jdbcType="FLOAT" property="bookRate"/>
+        <result column="post_time" jdbcType="TIMESTAMP" property="postTime"/>
+        <result column="reporter_status" jdbcType="INTEGER" property="reporterStatus"/>
+        <association property="book" javaType="com.hurpods.springboot.hurpodsblog.pojo.Book">
+            <id column="book_id" property="bookId"/>
+            <result column="book_cover" property="bookCover"/>
+            <result column="book_title" property="bookTitle"/>
+            <result column="book_author" property="bookAuthor"/>
+            <result column="post_date" property="postDate"/>
+            <result column="book_press" property="bookPress"/>
+            <result column="book_abs" property="bookAbs"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="ArticleResultMap" type="com.hurpods.springboot.hurpodsblog.pojo.Article">
+        <id column="article_id" property="articleId" jdbcType="INTEGER"/>
+        <result column="article_author_id" property="articleAuthorId" jdbcType="INTEGER"/>
+        <result column="article_title" property="articleTitle" jdbcType="VARCHAR"/>
+        <result column="article_content" property="articleContent" jdbcType="LONGVARCHAR"/>
+        <result column="article_view_count" property="articleViewCount" jdbcType="INTEGER"/>
+        <result column="article_comments_count" property="articleCommentsCount" jdbcType="INTEGER"/>
+        <result column="article_status" property="articleStatus" jdbcType="INTEGER"/>
+        <result column="article_create_time" property="articleCreateTime" jdbcType="TIMESTAMP"/>
+        <result column="article_update_time" property="articleUpdateTime" jdbcType="TIMESTAMP"/>
+        <result column="article_summary" property="articleSummary" jdbcType="VARCHAR"/>
+        <result column="article_cover" property="articleCover" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getAllReporters" resultMap="ReporterBaseResultMap">
+        select *
+        from reporter,
+             book
+        where reporter.book_id = book.book_id
+        order by reporter.reporter_id desc
+    </select>
+
+    <select id="getReporterByBook" resultMap="ReporterBaseResultMap">
+        select *
+        from reporter,
+             book
+        where reporter.book_id = #{bookId}
+          and reporter.book_id = book.book_id
+        order by reporter.reporter_id desc
+    </select>
+    <select id="getReporterById" resultMap="ReporterBaseResultMap">
+        select *
+        from reporter,
+             book
+        where reporter.reporter_id = #{id}
+          and reporter.book_id = book.book_id
+        order by reporter.reporter_id desc
+    </select>
+    <insert id="insertReporter" parameterType="com.hurpods.springboot.hurpodsblog.pojo.Reporter" useGeneratedKeys="true"
+            keyProperty="reporterId">
+        insert into reporter (reporter_title, reporter_content, book_id, book_rate, post_time, reporter_status)
+        VALUES (#{reporterTitle}, #{reporterContent}, #{bookId}, #{bookRate}, #{postTime}, #{reporterStatus})
+    </insert>
+
+    <select id="getAllArticle" resultMap="ArticleResultMap">
+        select *
+        from article
+        order by article_id desc
+    </select>
+
+    <select id="getArticleById" resultMap="ArticleResultMap">
+        select *
+        from article
+        where article_id = #{id}
+        order by article_id desc
+    </select>
+
+</mapper>

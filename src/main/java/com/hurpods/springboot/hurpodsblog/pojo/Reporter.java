@@ -15,6 +15,8 @@ public class Reporter {
     private Float bookRate;
     private Timestamp postTime;
     private Integer reporterStatus;
+    private Book book;
+    private User user;
 
     public Reporter(ReporterDTO reporterDTO) {
         this.reporterTitle = HtmlUtil.escape(reporterDTO.getTitle());
