@@ -2,6 +2,7 @@ package com.hurpods.springboot.hurpodsblog.pojo;
 
 import cn.hutool.http.HtmlUtil;
 import com.hurpods.springboot.hurpodsblog.dto.ReporterDTO;
+import com.hurpods.springboot.hurpodsblog.vo.UserVo;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -16,7 +17,7 @@ public class Reporter {
     private Timestamp postTime;
     private Integer reporterStatus;
     private Book book;
-    private User user;
+    private UserVo user;
 
     public Reporter(ReporterDTO reporterDTO) {
         this.reporterTitle = HtmlUtil.escape(reporterDTO.getTitle());

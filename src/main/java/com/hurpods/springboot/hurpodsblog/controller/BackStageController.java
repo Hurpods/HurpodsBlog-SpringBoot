@@ -59,13 +59,4 @@ public class BackStageController {
                 ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_BLANK, "请输入关键字") :
                 ResultFactory.buildSuccessResult(bookService.searchBooks(keywords));
     }
-
-    @PostMapping("/reporter/{status}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public Result writeReporter(@RequestBody ReporterDTO reporterDTO, @PathVariable String status) {
-        int num = contentService.insertReporter(reporterDTO, status);
-        return num == 0 ?
-                ResultFactory.buildFailureResult("发生未知错误，请稍后重试") :
-                ResultFactory.buildSuccessResult("发表成功");
-    }
 }

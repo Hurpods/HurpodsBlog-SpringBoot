@@ -1,7 +1,6 @@
 package com.hurpods.springboot.hurpodsblog.controller;
 
 import com.hurpods.springboot.hurpodsblog.result.Result;
-import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
 import com.hurpods.springboot.hurpodsblog.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +44,6 @@ public class UploadController {
     @PostMapping("/book/cover")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Result uploadBookCover(MultipartFile file) {
-        return uploadService.uploadCover(file);
+        return uploadService.uploadBookCover(file);
     }
 }

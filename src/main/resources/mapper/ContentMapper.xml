@@ -5,10 +5,8 @@
         <id column="reporter_id" jdbcType="INTEGER" property="reporterId"/>
         <result column="reporter_title" jdbcType="VARCHAR" property="reporterTitle"/>
         <result column="reporter_content" jdbcType="VARCHAR" property="reporterContent"/>
-        <result column="book_id" jdbcType="INTEGER" property="bookId"/>
         <result column="book_rate" jdbcType="FLOAT" property="bookRate"/>
         <result column="post_time" jdbcType="TIMESTAMP" property="postTime"/>
-        <result column="reporter_status" jdbcType="INTEGER" property="reporterStatus"/>
         <association property="book" javaType="com.hurpods.springboot.hurpodsblog.pojo.Book">
             <id column="book_id" property="bookId"/>
             <result column="book_cover" property="bookCover"/>
@@ -17,6 +15,11 @@
             <result column="post_date" property="postDate"/>
             <result column="book_press" property="bookPress"/>
             <result column="book_abs" property="bookAbs"/>
+        </association>
+        <association property="user" javaType="com.hurpods.springboot.hurpodsblog.vo.UserVo">
+            <id column="user_id" property="userId"/>
+            <result column="user_name" property="userName"/>
+            <result column="user_nick_name" property="userNickName"/>
         </association>
     </resultMap>
 
@@ -27,54 +30,110 @@
         <result column="article_content" property="articleContent" jdbcType="LONGVARCHAR"/>
         <result column="article_view_count" property="articleViewCount" jdbcType="INTEGER"/>
         <result column="article_comments_count" property="articleCommentsCount" jdbcType="INTEGER"/>
-        <result column="article_status" property="articleStatus" jdbcType="INTEGER"/>
         <result column="article_create_time" property="articleCreateTime" jdbcType="TIMESTAMP"/>
         <result column="article_update_time" property="articleUpdateTime" jdbcType="TIMESTAMP"/>
         <result column="article_summary" property="articleSummary" jdbcType="VARCHAR"/>
         <result column="article_cover" property="articleCover" jdbcType="VARCHAR"/>
+        <association property="user" javaType="com.hurpods.springboot.hurpodsblog.vo.UserVo">
+            <id column="user_id" property="userId"/>
+            <result column="user_name" property="userName"/>
+            <result column="user_nick_name" property="userNickName"/>
+        </association>
     </resultMap>
+
+    <select id="getReporterNumber" resultType="java.lang.Integer">
+        select count(*)
+        from reporter
+    </select>
 
     <select id="getAllReporters" resultMap="ReporterBaseResultMap">
         select *
         from reporter,
-             book
+             book,
+             user
         where reporter.book_id = book.book_id
+          and reporter.author_id = user.user_id
         order by reporter.reporter_id desc
     </select>
 
     <select id="getReporterByBook" resultMap="ReporterBaseResultMap">
         select *
         from reporter,
-             book
+             book,
+             user
         where reporter.book_id = #{bookId}
           and reporter.book_id = book.book_id
+          and reporter.author_id = user.user_id
         order by reporter.reporter_id desc
     </select>
     <select id="getReporterById" resultMap="ReporterBaseResultMap">
         select *
         from reporter,
-             book
+             book,
+             user
         where reporter.reporter_id = #{id}
           and reporter.book_id = book.book_id
+          and reporter.author_id = user.user_id
         order by reporter.reporter_id desc
     </select>
     <insert id="insertReporter" parameterType="com.hurpods.springboot.hurpodsblog.pojo.Reporter" useGeneratedKeys="true"
             keyProperty="reporterId">
-        insert into reporter (reporter_title, reporter_content, book_id, book_rate, post_time, reporter_status)
-        VALUES (#{reporterTitle}, #{reporterContent}, #{bookId}, #{bookRate}, #{postTime}, #{reporterStatus})
+        insert into reporter (reporter_title, reporter_content, book_id, book_rate, post_time)
+        VALUES (#{reporterTitle}, #{reporterContent}, #{bookId}, #{bookRate}, #{postTime})
     </insert>
+
+    <update id="updateReporter" parameterType="com.hurpods.springboot.hurpodsblog.pojo.Reporter">
+        update reporter
+        <set>
+            <if test="reporterTitle != null">reporter_title=#{reporterTitle},</if>
+            <if test="bookId != null">book_id=#{bookId},</if>
+            <if test="bookRate != null">book_rate=#{bookRate},</if>
+            <if test="postTime != null">post_time=#{postTime},</if>
+        </set>
+        where reporter_id=#{reporterId}
+    </update>
+
+    <select id="reporterFuzzySearch" resultMap="ReporterBaseResultMap">
+        select *
+        from reporter,
+             user,
+             book
+        where reporter.reporter_title like concat('%', #{keywords}, '%')
+            and reporter.book_id = book.book_id
+            and reporter.author_id = user.user_id
+        order by reporter.reporter_id desc
+    </select>
+
+    <delete id="deleteReporterById">
+        delete
+        from reporter
+        where reporter_id = #{reporterId}
+    </delete>
 
     <select id="getAllArticle" resultMap="ArticleResultMap">
         select *
-        from article
+        from article,user
+        where article.article_author_id=user.user_id
         order by article_id desc
     </select>
 
     <select id="getArticleById" resultMap="ArticleResultMap">
         select *
-        from article
+        from article,user
         where article_id = #{id}
+        and article.article_author_id=user.user_id
         order by article_id desc
     </select>
 
+    <insert id="insertArticle" parameterType="com.hurpods.springboot.hurpodsblog.pojo.Article" useGeneratedKeys="true"
+            keyProperty="articleId">
+        insert into article (article_author_id, article_title, article_content, article_create_time,
+                             article_update_time, article_summary, article_cover)
+        values (#{user.userId}, #{articleTitle}, #{articleContent}, #{articleCreateTime}, #{articleUpdateTime},
+                #{articleSummary}, #{articleCover})
+    </insert>
+
+    <select id="getArticleNumber" resultType="java.lang.Integer">
+        select count(*) from article
+    </select>
 </mapper>

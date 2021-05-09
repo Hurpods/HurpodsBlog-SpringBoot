@@ -1,7 +1,5 @@
 package com.hurpods.springboot.hurpodsblog.security.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
 import com.hurpods.springboot.hurpodsblog.security.constans.SecurityConstants;
 import com.hurpods.springboot.hurpodsblog.security.service.UserDetailsServiceImpl;
 import com.hurpods.springboot.hurpodsblog.security.utils.JwtTokenUtil;

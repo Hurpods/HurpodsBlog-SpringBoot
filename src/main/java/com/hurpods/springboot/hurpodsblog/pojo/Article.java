@@ -1,5 +1,7 @@
 package com.hurpods.springboot.hurpodsblog.pojo;
 
+import com.hurpods.springboot.hurpodsblog.dto.ArticleDTO;
+import com.hurpods.springboot.hurpodsblog.vo.UserVo;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,5 +21,10 @@ public class Article implements Serializable {
     private Timestamp articleUpdateTime;
     private String articleSummary;
     private String articleCover;
-    private User user;
+    private UserVo user;
+
+    public Article(ArticleDTO dto){
+        this.articleTitle=dto.getTitle();
+        this.articleContent=dto.getContent();
+    }
 }

@@ -66,8 +66,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUserById(Integer userId) {
-        userDAO.deleteUserById(userId);
+    public Result deleteUserById(Integer userId) {
+        int num = userDAO.deleteUserById(userId);
+        return num == 1 ? ResultFactory.buildSuccessResult("账号成功删除") : ResultFactory.buildFailureResult("发生错误");
     }
 
     @Override
@@ -117,7 +118,7 @@ public class UserServiceImpl implements UserService {
             userRoleRef.setUserId(user.getUserId());
             userRoleRef.setRoleId(2);
 
-            CityUserRef cityUserRef=new CityUserRef();
+            CityUserRef cityUserRef = new CityUserRef();
             cityUserRef.setUserId(user.getUserId());
             cityUserRef.setCityCode("1");
             cityUserRef.setProvinceCode("1");

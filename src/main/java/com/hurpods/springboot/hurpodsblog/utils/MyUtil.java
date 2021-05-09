@@ -48,28 +48,6 @@ public class MyUtil {
         return ipAddress;
     }
 
-    //利用hash3-256算法和加盐再hash确保不被彩虹表破解
-    public static String hashPass(String str, String salt) {
-        String result = sha3256(str);
-        result += salt;
-        result = sha3256(result);
-        return result;
-    }
-
-    //hash3-256摘要加密算法，用来脱敏密码
-    public static String sha3256(String str) {
-        MessageDigest messageDigest;
-        String encdeStr = "";
-        try {
-            messageDigest = MessageDigest.getInstance("SHA-256");
-            byte[] bytes = messageDigest.digest(str.getBytes(StandardCharsets.UTF_8));
-            encdeStr = Hex.encodeHexString(bytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return encdeStr;
-    }
-
     //随机产生字符串
     public static String getRandomString(int length) {
         String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

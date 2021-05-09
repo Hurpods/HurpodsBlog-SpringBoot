@@ -30,7 +30,7 @@ public class AuthController {
     RoleService roleService;
 
     @PostMapping("/register")
-    public Result registerUser(RegisterRequest registerRequest, HttpServletRequest request) throws Exception {
+    public Result registerUser(RegisterRequest registerRequest, HttpServletRequest request) {
         User user = userService.registerUser(registerRequest, request);
         if (user != null) {
             return ResultFactory.buildSuccessResult(user);

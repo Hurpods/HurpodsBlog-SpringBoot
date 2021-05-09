@@ -20,7 +20,7 @@ public interface UserService {
 
     User getUserByOthers(@Param("value") String value);
 
-    void deleteUserById(@Param("userId") Integer userId);
+    Result deleteUserById(@Param("userId") Integer userId);
 
     Result deleteUserByUsername(String password, @Param("userName") String username);
 

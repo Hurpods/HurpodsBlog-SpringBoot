@@ -88,6 +88,12 @@ public class AccountController {
         return userService.updateUser(user, userId);
     }
 
+    @DeleteMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public Result deleteUser(@PathVariable Integer userId) {
+        return userService.deleteUserById(userId);
+    }
+
     @GetMapping("/specialUser")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Result getSpecial(Integer pageNum) {

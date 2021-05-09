@@ -16,7 +16,7 @@ public interface UserDAO {
 
     User getUserByOthers(@Param("value") String value);
 
-    void deleteUserById(@Param("userId") Integer userId);
+    int deleteUserById(@Param("userId") Integer userId);
 
     Integer deleteUserByUsername(@Param("userName") String username);
 
