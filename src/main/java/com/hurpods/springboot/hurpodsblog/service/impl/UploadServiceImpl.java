@@ -3,6 +3,7 @@ package com.hurpods.springboot.hurpodsblog.service.impl;
 import cn.hutool.http.HtmlUtil;
 import com.hurpods.springboot.hurpodsblog.dto.ArticleDTO;
 import com.hurpods.springboot.hurpodsblog.dto.ReporterDTO;
+import com.hurpods.springboot.hurpodsblog.pojo.Article;
 import com.hurpods.springboot.hurpodsblog.pojo.Reporter;
 import com.hurpods.springboot.hurpodsblog.result.Result;
 import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
@@ -81,9 +82,8 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
-    public Result uploadBookCover(MultipartFile file) {
+    public Result uploadCover(MultipartFile file) {
         String filename = file.getOriginalFilename();
-        System.out.println(filename);
         String suffix = filename.substring(filename.lastIndexOf("."));
         File descFile = new File(
                 BASE_FOLDER
@@ -104,8 +104,7 @@ public class UploadServiceImpl implements UploadService {
         }
         try {
             file.transferTo(descFile);
-            System.out.println(descFile.getPath());
-            return ResultFactory.buildSuccessResult("http://localhost:8090/file/cover/" + descFile.getName());
+            return ResultFactory.buildSuccessResult(descFile.getName());
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResultFactory.buildFailureResult(e.getMessage());
@@ -114,13 +113,13 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public Result updateReporter(ReporterDTO dto, Reporter r) {
-        try{
+        try {
             String path = r.getReporterContent();
-            BufferedWriter bw=new BufferedWriter(new FileWriter(path));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(path));
             bw.write(dto.getContent());
             bw.close();
             return ResultFactory.buildSuccessResult("success");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return ResultFactory.buildSuccessResult("未知错误");
@@ -148,7 +147,16 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
-    public Result uploadArticleCover(MultipartFile file) {
-        return null;
+    public Result updateArticle(ArticleDTO articleDTO, Article a) {
+        try{
+            String path=a.getArticleContent();
+            BufferedWriter bw = new BufferedWriter(new FileWriter(path));
+            bw.write(articleDTO.getContent());
+            bw.close();
+            return ResultFactory.buildSuccessResult("success");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResultFactory.buildSuccessResult("未知错误");
     }
 }

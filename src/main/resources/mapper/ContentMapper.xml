@@ -99,8 +99,8 @@
              user,
              book
         where reporter.reporter_title like concat('%', #{keywords}, '%')
-            and reporter.book_id = book.book_id
-            and reporter.author_id = user.user_id
+          and reporter.book_id = book.book_id
+          and reporter.author_id = user.user_id
         order by reporter.reporter_id desc
     </select>
 
@@ -112,16 +112,18 @@
 
     <select id="getAllArticle" resultMap="ArticleResultMap">
         select *
-        from article,user
-        where article.article_author_id=user.user_id
+        from article,
+             user
+        where article.article_author_id = user.user_id
         order by article_id desc
     </select>
 
     <select id="getArticleById" resultMap="ArticleResultMap">
         select *
-        from article,user
+        from article,
+             user
         where article_id = #{id}
-        and article.article_author_id=user.user_id
+          and article.article_author_id = user.user_id
         order by article_id desc
     </select>
 
@@ -134,6 +136,25 @@
     </insert>
 
     <select id="getArticleNumber" resultType="java.lang.Integer">
-        select count(*) from article
+        select count(*)
+        from article
     </select>
+
+    <update id="updateArticle" parameterType="com.hurpods.springboot.hurpodsblog.pojo.Article">
+        update article
+        <set>
+            <if test="articleTitle!=null">article_title=#{articleTitle},</if>
+            <if test="articleUpdateTime!=null">article_update_time=#{articleUpdateTime},</if>
+            <if test="articleSummary!=null">article_summary=#{articleSummary},</if>
+            <if test="articleCover!=null">article_cover=#{articleCover},</if>
+            <if test="user!=null">article_author_id=#{user.userId}</if>
+        </set>
+        where article_id=#{articleId}
+    </update>
+
+    <delete id="deleteArticleById">
+        delete
+        from article
+        where article_id = #{id}
+    </delete>
 </mapper>

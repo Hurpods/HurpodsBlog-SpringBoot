@@ -36,4 +36,8 @@ public interface ContentService {
     Result insertArticle(ArticleDTO articleDTO);
 
     int getArticleNumber();
+
+    Result updateArticle(ArticleDTO articleDTO, Integer id);
+
+    Result deleteArticleById(Integer id);
 }

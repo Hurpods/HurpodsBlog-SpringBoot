@@ -34,4 +34,8 @@ public interface ContentDAO {
     int insertArticle(Article article);
 
     int getArticleNumber();
+
+    int updateArticle(Article article);
+
+    int deleteArticleById(Integer id);
 }

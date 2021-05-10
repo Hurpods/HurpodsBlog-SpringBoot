@@ -41,9 +41,9 @@ public class UploadController {
         return map;
     }
 
-    @PostMapping("/book/cover")
+    @PostMapping("/cover")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public Result uploadBookCover(MultipartFile file) {
-        return uploadService.uploadBookCover(file);
+    public Result uploadCover(MultipartFile file) {
+        return uploadService.uploadCover(file);
     }
 }

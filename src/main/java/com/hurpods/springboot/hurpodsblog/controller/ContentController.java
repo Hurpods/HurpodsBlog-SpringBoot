@@ -104,23 +104,35 @@ public class ContentController {
             PageHelper.startPage(pageNum, 12);
         }
 
-        articleList=contentService.getAllArticle();
-        Integer size =contentService.getArticleNumber();
+        articleList = contentService.getAllArticle();
+        Integer size = contentService.getArticleNumber();
 
-        Map<String,Object> map=new HashMap<>();
-        map.put("articleList",articleList);
-        map.put("articleSize",size);
+        Map<String, Object> map = new HashMap<>();
+        map.put("articleList", articleList);
+        map.put("articleSize", size);
 
-        return articleList.size()!=0?
-                ResultFactory.buildSuccessResult(map):
+        return articleList.size() != 0 ?
+                ResultFactory.buildSuccessResult(map) :
                 ResultFactory.buildCustomFailureResult(ResultCode.RESULT_DATA_NONE, "无数据");
     }
 
     @GetMapping("/articles")
     public Result getHomeArticle() throws IOException {
-        List<Article> articleList=contentService.getAllArticle();
-        return articleList.size()!=0?
-                ResultFactory.buildSuccessResult(articleList):
+        List<Article> articleList = contentService.getAllArticle();
+        return articleList.size() != 0 ?
+                ResultFactory.buildSuccessResult(articleList) :
                 ResultFactory.buildCustomFailureResult(ResultCode.RESULT_DATA_NONE, "无数据");
+    }
+
+    @PutMapping("/article/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR')")
+    public Result updateArticle(@RequestBody ArticleDTO articleDTO, @PathVariable Integer id) {
+        return contentService.updateArticle(articleDTO,id);
+    }
+
+    @DeleteMapping("/article/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR')")
+    public Result deleteArticle( @PathVariable Integer id) {
+        return contentService.deleteArticleById(id);
     }
 }

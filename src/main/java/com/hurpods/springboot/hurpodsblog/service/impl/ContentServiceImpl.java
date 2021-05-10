@@ -119,10 +119,15 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Result deleteReporterById(Integer id) {
-        int num = contentDAO.deleteReporterById(id);
-        return num == 1 ?
-                ResultFactory.buildSuccessResult(null) :
-                ResultFactory.buildFailureResult("未知错误");
+        Reporter reporter = contentDAO.getReporterById(id);
+        File file = new File(reporter.getReporterContent());
+        if (file.delete()) {
+            int num = contentDAO.deleteReporterById(id);
+            return num == 1 ?
+                    ResultFactory.buildSuccessResult(null) :
+                    ResultFactory.buildFailureResult("未知错误");
+        }
+        return ResultFactory.buildFailureResult("未知错误");
     }
 
     @Override
@@ -154,7 +159,11 @@ public class ContentServiceImpl implements ContentService {
         Timestamp nowTime = new Timestamp(new Date().getTime());
         article.setArticleCreateTime(nowTime);
         article.setArticleUpdateTime(nowTime);
-        article.setArticleCover(articleDTO.getCover());
+        if(articleDTO.getCover().equals("")){
+            article.setArticleCover("default-cover.jpg");
+        }else{
+            article.setArticleCover(articleDTO.getCover());
+        }
         String sum = HtmlUtil.filter(articleDTO.getContent());
         if (sum.length() >= 40) {
             sum = sum.substring(40);
@@ -162,7 +171,7 @@ public class ContentServiceImpl implements ContentService {
         article.setArticleSummary(sum);
 
         User user = userService.getUserByUsername(articleDTO.getUserName());
-        UserVo userVo=new UserVo(user);
+        UserVo userVo = new UserVo(user);
         article.setUser(userVo);
 
         articleDTO = (ArticleDTO) uploadService.uploadArticle(articleDTO).getData();
@@ -178,6 +187,47 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public int getArticleNumber() {
         return contentDAO.getArticleNumber();
+    }
+
+    @Override
+    public Result updateArticle(ArticleDTO articleDTO, Integer id) {
+        Article a = contentDAO.getArticleById(id);
+        Timestamp nowTime = new Timestamp(new Date().getTime());
+        a.setArticleUpdateTime(nowTime);
+        a.setArticleTitle(articleDTO.getTitle());
+        a.setArticleCover(articleDTO.getCover());
+
+        User user = userService.getUserByUsername(articleDTO.getUserName());
+        UserVo userVo = new UserVo(user);
+        a.setUser(userVo);
+
+        String sum = HtmlUtil.filter(articleDTO.getContent());
+        if (sum.length() >= 40) {
+            sum = sum.substring(40);
+        }
+        a.setArticleSummary(sum);
+
+        int num = 0;
+        if (uploadService.updateArticle(articleDTO, a).getCode() == 1) {
+            num = contentDAO.updateArticle(a);
+        }
+
+        return num == 1 ?
+                ResultFactory.buildSuccessResult(a) :
+                ResultFactory.buildFailureResult("未知错误");
+    }
+
+    @Override
+    public Result deleteArticleById(Integer id) {
+        Article article = contentDAO.getArticleById(id);
+        File file = new File(article.getArticleContent());
+        if (file.delete()) {
+            int num = contentDAO.deleteArticleById(id);
+            return num == 1 ?
+                    ResultFactory.buildSuccessResult(null) :
+                    ResultFactory.buildFailureResult("未知错误");
+        }
+        return ResultFactory.buildFailureResult("未知错误");
     }
 
 }
