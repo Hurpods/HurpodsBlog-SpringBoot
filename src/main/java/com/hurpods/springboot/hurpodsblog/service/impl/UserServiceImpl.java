@@ -296,6 +296,12 @@ public class UserServiceImpl implements UserService {
         return userDAO.banUser(idList);
     }
 
+    @Override
+    public Result unbanUser(int id) {
+        int num = userDAO.unbanUser(id);
+        return num==1?ResultFactory.buildSuccessResult("success"):ResultFactory.buildFailureResult("unknown failure");
+    }
+
     private String getSalt(Object object) throws Exception {
         Class cl = Class.forName(object.getClass().getName());
         Method getUsername = cl.getMethod("getUsername");

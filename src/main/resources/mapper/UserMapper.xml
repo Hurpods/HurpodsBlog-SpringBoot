@@ -168,4 +168,10 @@
             #{id}
         </foreach>
     </update>
+
+    <update id="unbanUser">
+        update user
+        set enabled=1
+        where user_id = #{id}
+    </update>
 </mapper>

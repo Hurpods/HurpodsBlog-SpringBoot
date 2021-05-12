@@ -1,62 +1,47 @@
 package com.hurpods.springboot.hurpodsblog.controller;
 
-import com.hurpods.springboot.hurpodsblog.dto.ReporterDTO;
-import com.hurpods.springboot.hurpodsblog.pojo.Book;
 import com.hurpods.springboot.hurpodsblog.result.Result;
 import com.hurpods.springboot.hurpodsblog.result.ResultCode;
 import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
-import com.hurpods.springboot.hurpodsblog.service.BookService;
-import com.hurpods.springboot.hurpodsblog.service.ContentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.io.FileUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/backStage")
 public class BackStageController {
-    @Autowired
-    BookService bookService;
 
-    @Autowired
-    ContentService contentService;
 
-    @GetMapping("/books")
+    @GetMapping("/logs/{date}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public Result getAllBooks() {
-        return ResultFactory.buildSuccessResult(bookService.getAllBooks());
+    public Result readLogs(@PathVariable String date) throws IOException {
+        String path = "D:\\Development\\uploads\\logs\\" + date;
+        String content = FileUtils.readFileToString(new File(path), StandardCharsets.UTF_8);
+        content = content.replaceAll("\n", "<br/>");
+        return ResultFactory.buildSuccessResult(content);
     }
 
-    @PostMapping("/books")
+    @GetMapping("/logs")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public Result updateOrInsertBook(@RequestBody Book book) {
-        return book.getBookId() == null ? bookService.insertBook(book) : bookService.updateBook(book);
-    }
+    public Result getAllLogs() throws IOException {
+        String path = "D:\\Development\\uploads\\logs\\";
+        List<String> logList = new ArrayList<>();
+        File logDir = new File(path);
 
-    @DeleteMapping("/books/{bookId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public Result deleteBook(@PathVariable Integer bookId) {
-        return bookService.deleteBook(bookId);
-    }
-
-    @GetMapping("/cats")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public Result getAllCats() {
-        return ResultFactory.buildSuccessResult(bookService.getAllCats());
-    }
-
-    @GetMapping("/cat/{catId}/books")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public Result getBooksByCat(@PathVariable Integer catId) {
-        return catId == 0 ?
-                ResultFactory.buildSuccessResult(bookService.getAllBooks()) :
-                ResultFactory.buildSuccessResult(bookService.getBooksByCatId(catId));
-    }
-
-    @GetMapping("/books/search/{keywords}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public Result searchBooks(@PathVariable String keywords) {
-        return keywords.equals("") ?
-                ResultFactory.buildCustomFailureResult(ResultCode.PARAM_IS_BLANK, "请输入关键字") :
-                ResultFactory.buildSuccessResult(bookService.searchBooks(keywords));
+        File[] tempList = logDir.listFiles();
+        if (tempList != null) {
+            for (File file : tempList) {
+                String date = file.getName();
+                logList.add(date);
+            }
+            return ResultFactory.buildSuccessResult(logList);
+        }
+        return ResultFactory.buildFailureResult(ResultCode.RESULT_DATA_NONE);
     }
 }

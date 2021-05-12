@@ -45,4 +45,6 @@ public interface UserService {
     List<User> fuzzySearch(@Param("keywords") String keywords);
 
     Integer banUser(List<Integer> idList);
+
+    Result unbanUser(int id);
 }

@@ -82,6 +82,14 @@ public class AccountController {
         return res > 0 ? ResultFactory.buildSuccessResult(res) : ResultFactory.buildFailureResult("发生未知错误");
     }
 
+    @PutMapping("/user/unban")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_JUDGEMENT')")
+    public Result unbanUser(@RequestBody String id){
+        JSONObject json = new JSONObject(id);
+        int userId= (int) json.get("id");
+        return userService.unbanUser(userId);
+    }
+
     @PutMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Result updateUser(@PathVariable Integer userId, @RequestBody UpdateRequest user) {
