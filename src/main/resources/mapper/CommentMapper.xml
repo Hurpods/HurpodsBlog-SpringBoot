@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hurpods.springboot.hurpodsblog.dao.CommentDAO">
+    <resultMap id="CommendBaseResultMap" type="com.hurpods.springboot.hurpodsblog.pojo.Comment">
+        <id column="comment_id" jdbcType="INTEGER" property="commentId"/>
+        <result column="comment_content" jdbcType="VARCHAR" property="commentContent"/>
+        <result column="comment_pre_id" jdbcType="INTEGER" property="commentPreId"/>
+        <result column="comment_author_id" jdbcType="INTEGER" property="commentAuthorId"/>
+        <result column="comment_post_time" jdbcType="TIMESTAMP" property="commentPostTime"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="content_id" jdbcType="INTEGER" property="contentId"/>
+        <association property="user" javaType="com.hurpods.springboot.hurpodsblog.vo.UserVo">
+            <id column="user_id" property="userId"/>
+            <result column="user_name" property="userName"/>
+            <result column="user_nick_name" property="userNickName"/>
+            <result column="user_avatar" property="userAvatar"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertComment" parameterType="com.hurpods.springboot.hurpodsblog.pojo.Comment" useGeneratedKeys="true"
+            keyProperty="commentId">
+        insert into comment(comment_content, comment_pre_id, comment_author_id, comment_post_time, status, content_id)
+        values (#{commentContent}, #{commentPreId}, #{commentAuthorId}, #{commentPostTime}, #{status}, #{contentId})
+    </insert>
+</mapper>

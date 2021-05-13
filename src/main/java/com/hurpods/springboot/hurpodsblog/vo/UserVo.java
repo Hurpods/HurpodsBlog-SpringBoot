@@ -13,6 +13,8 @@ public class UserVo implements Serializable {
 
     private String userNickName;
 
+    private String userAvatar;
+
     public UserVo(User user){
         this.userId=user.getUserId();
         this.userName=user.getUserName();
