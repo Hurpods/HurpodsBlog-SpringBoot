@@ -22,4 +22,12 @@
         insert into comment(comment_content, comment_pre_id, comment_author_id, comment_post_time, status, content_id)
         values (#{commentContent}, #{commentPreId}, #{commentAuthorId}, #{commentPostTime}, #{status}, #{contentId})
     </insert>
+
+    <select id="getCommentByContentId" resultMap="CommendBaseResultMap">
+        select *
+        from comment,user
+        where comment.status = #{status}
+          and comment.comment_author_id=user.user_id
+          and content_id = #{id}
+    </select>
 </mapper>

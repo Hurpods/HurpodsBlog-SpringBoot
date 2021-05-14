@@ -5,4 +5,6 @@ import com.hurpods.springboot.hurpodsblog.result.Result;
 
 public interface CommentService {
     Result postComment(CommentDTO dto);
+
+    Result getCommentByContentId(Integer status,Integer id);
 }
