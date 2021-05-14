@@ -11,4 +11,6 @@ public interface CommentDAO {
     int insertComment(Comment comment);
 
     List<Comment> getCommentByContentId(Integer status,Integer id);
+
+    int deleteCommentById(Integer id);
 }

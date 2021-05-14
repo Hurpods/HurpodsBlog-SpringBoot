@@ -30,4 +30,9 @@ public class CommentController {
         }
         return ResultFactory.buildFailureResult(ResultCode.INTERFACE_INNER_INVOKE_ERROR);
     }
+
+    @DeleteMapping("/comment/{id}")
+    public Result deleteCommentById(@PathVariable Integer id){
+        return commentService.deleteCommentById(id);
+    }
 }

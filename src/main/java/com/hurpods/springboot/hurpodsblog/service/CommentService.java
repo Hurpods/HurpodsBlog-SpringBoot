@@ -7,4 +7,6 @@ public interface CommentService {
     Result postComment(CommentDTO dto);
 
     Result getCommentByContentId(Integer status,Integer id);
+
+    Result deleteCommentById(Integer id);
 }

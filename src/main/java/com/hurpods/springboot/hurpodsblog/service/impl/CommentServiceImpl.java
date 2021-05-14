@@ -36,13 +36,19 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Result getCommentByContentId(Integer status,Integer id) {
-        List<Comment> commentList = commentDAO.getCommentByContentId(status,id);
+    public Result getCommentByContentId(Integer status, Integer id) {
+        List<Comment> commentList = commentDAO.getCommentByContentId(status, id);
         for (Comment comment : commentList) {
             comment.setCommentContent(HtmlUtil.unescape(comment.getCommentContent()));
         }
         return commentList.size() != 0 ?
                 ResultFactory.buildSuccessResult(commentList) :
                 ResultFactory.buildFailureResult(ResultCode.RESULT_DATA_NONE);
+    }
+
+    @Override
+    public Result deleteCommentById(Integer id) {
+        int num = commentDAO.deleteCommentById(id);
+        return num == 1 ? ResultFactory.buildSuccessResult("删除成功") : ResultFactory.buildFailureResult("unknown error");
     }
 }

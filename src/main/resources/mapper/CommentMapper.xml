@@ -25,9 +25,16 @@
 
     <select id="getCommentByContentId" resultMap="CommendBaseResultMap">
         select *
-        from comment,user
+        from comment,
+             user
         where comment.status = #{status}
-          and comment.comment_author_id=user.user_id
+          and comment.comment_author_id = user.user_id
           and content_id = #{id}
     </select>
+
+    <delete id="deleteCommentById">
+        delete
+        from comment
+        where comment_id = #{id}
+    </delete>
 </mapper>
