@@ -70,4 +70,8 @@ public class AuthController {
     public Result authBackStage() {
         return ResultFactory.buildSuccessResult("authSuccess");
     }
+
+    @PostMapping("/authComment")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_JUDGEMENT')")
+    public Result authComment(){return ResultFactory.buildSuccessResult("authSuccess");}
 }

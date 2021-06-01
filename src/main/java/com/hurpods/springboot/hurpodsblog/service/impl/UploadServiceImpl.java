@@ -1,6 +1,7 @@
 package com.hurpods.springboot.hurpodsblog.service.impl;
 
 import cn.hutool.http.HtmlUtil;
+import cn.hutool.json.JSONObject;
 import com.hurpods.springboot.hurpodsblog.dto.ArticleDTO;
 import com.hurpods.springboot.hurpodsblog.dto.ReporterDTO;
 import com.hurpods.springboot.hurpodsblog.pojo.Article;
@@ -8,7 +9,10 @@ import com.hurpods.springboot.hurpodsblog.pojo.Reporter;
 import com.hurpods.springboot.hurpodsblog.result.Result;
 import com.hurpods.springboot.hurpodsblog.result.ResultFactory;
 import com.hurpods.springboot.hurpodsblog.service.UploadService;
+import com.hurpods.springboot.hurpodsblog.service.UserService;
 import com.hurpods.springboot.hurpodsblog.utils.MyUtil;
+import com.sun.org.apache.xpath.internal.operations.Mult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +24,8 @@ import java.util.Calendar;
 
 @Service
 public class UploadServiceImpl implements UploadService {
+    @Autowired
+    UserService userService;
     private static final String BASE_FOLDER = "D:/Development/uploads";
 
     @Override
@@ -55,8 +61,26 @@ public class UploadServiceImpl implements UploadService {
         }
     }
 
+
     @Override
-    public Result uploadAvatar(MultipartFile file) {
+    public Result uploadAvatar(int id, MultipartFile file) {
+        String filename = file.getOriginalFilename();
+        String suffix = filename.substring(filename.lastIndexOf("."));
+        String avatarName = MyUtil.getRandomString(24) + suffix;
+        try {
+            String path = BASE_FOLDER
+                    + File.separator
+                    + "img"
+                    + File.separator
+                    + "avatar"
+                    + File.separator
+                    + avatarName;
+            file.transferTo(new File(path));
+            int num = userService.uploadAvatar(id, "http://localhost:8090/file/avatar/" + avatarName);
+            return num == 1 ? ResultFactory.buildSuccessResult("http://localhost:8090/file/avatar/" + avatarName) : ResultFactory.buildFailureResult("unknown error");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -148,13 +172,13 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public Result updateArticle(ArticleDTO articleDTO, Article a) {
-        try{
-            String path=a.getArticleContent();
+        try {
+            String path = a.getArticleContent();
             BufferedWriter bw = new BufferedWriter(new FileWriter(path));
             bw.write(articleDTO.getContent());
             bw.close();
             return ResultFactory.buildSuccessResult("success");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return ResultFactory.buildSuccessResult("未知错误");

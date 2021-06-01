@@ -13,7 +13,6 @@ public class Comment implements Serializable {
 
     private Integer commentId;
     private String commentContent;
-    private Integer commentPreId;
     private Integer commentAuthorId;
     private Timestamp commentPostTime;
     private Integer status;
@@ -23,7 +22,6 @@ public class Comment implements Serializable {
     public Comment(){}
     public Comment(CommentDTO dto){
         this.commentContent= dto.getCommentContent();
-        this.commentPreId=dto.getCommentPreId();
         this.commentAuthorId=dto.getCommentAuthorId();
         this.status=dto.getStatus();
         this.contentId=dto.getContentId();

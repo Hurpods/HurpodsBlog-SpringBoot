@@ -19,10 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -299,14 +297,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result unbanUser(int id) {
         int num = userDAO.unbanUser(id);
-        return num==1?ResultFactory.buildSuccessResult("success"):ResultFactory.buildFailureResult("unknown failure");
+        return num == 1 ? ResultFactory.buildSuccessResult("success") : ResultFactory.buildFailureResult("unknown failure");
     }
 
-    private String getSalt(Object object) throws Exception {
-        Class cl = Class.forName(object.getClass().getName());
-        Method getUsername = cl.getMethod("getUsername");
-        String username = (String) getUsername.invoke(object);
-
-        return Base64.getEncoder().encodeToString(username.getBytes());
+    @Override
+    public int uploadAvatar(int id, String s) {
+        return userDAO.uploadAvatar(id, s);
     }
+
 }

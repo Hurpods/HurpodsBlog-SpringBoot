@@ -4,7 +4,6 @@
     <resultMap id="CommendBaseResultMap" type="com.hurpods.springboot.hurpodsblog.pojo.Comment">
         <id column="comment_id" jdbcType="INTEGER" property="commentId"/>
         <result column="comment_content" jdbcType="VARCHAR" property="commentContent"/>
-        <result column="comment_pre_id" jdbcType="INTEGER" property="commentPreId"/>
         <result column="comment_author_id" jdbcType="INTEGER" property="commentAuthorId"/>
         <result column="comment_post_time" jdbcType="TIMESTAMP" property="commentPostTime"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
@@ -19,8 +18,8 @@
 
     <insert id="insertComment" parameterType="com.hurpods.springboot.hurpodsblog.pojo.Comment" useGeneratedKeys="true"
             keyProperty="commentId">
-        insert into comment(comment_content, comment_pre_id, comment_author_id, comment_post_time, status, content_id)
-        values (#{commentContent}, #{commentPreId}, #{commentAuthorId}, #{commentPostTime}, #{status}, #{contentId})
+        insert into comment(comment_content, comment_author_id, comment_post_time, status, content_id)
+        values (#{commentContent}, #{commentAuthorId}, #{commentPostTime}, #{status}, #{contentId})
     </insert>
 
     <select id="getCommentByContentId" resultMap="CommendBaseResultMap">
@@ -30,6 +29,7 @@
         where comment.status = #{status}
           and comment.comment_author_id = user.user_id
           and content_id = #{id}
+        order by comment.comment_id desc
     </select>
 
     <delete id="deleteCommentById">
@@ -37,4 +37,33 @@
         from comment
         where comment_id = #{id}
     </delete>
+
+    <select id="getAllComments" resultMap="CommendBaseResultMap">
+        select *
+        from comment,
+             user
+        where comment.comment_author_id = user.user_id
+        order by comment.comment_id desc
+    </select>
+    <select id="getCommentNumber" resultType="INTEGER">
+        select count(*)
+        from comment
+    </select>
+
+    <select id="fuzzySearch" resultMap="CommendBaseResultMap">
+        select *
+        from comment,
+             user
+        where comment.comment_content like concat('%', #{keywords}, '%')
+          and comment.comment_author_id = user.user_id
+        order by comment.comment_id desc
+    </select>
+
+    <delete id="batchDelete">
+        delete from comment where comment_id in
+        <foreach collection="idList" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </delete>
+
 </mapper>

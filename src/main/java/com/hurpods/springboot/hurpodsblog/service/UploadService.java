@@ -7,12 +7,11 @@ import com.hurpods.springboot.hurpodsblog.pojo.Reporter;
 import com.hurpods.springboot.hurpodsblog.result.Result;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.sound.midi.SoundbankResource;
 
 public interface UploadService {
     Result uploadContentPic(MultipartFile file);
 
-    Result uploadAvatar(MultipartFile file);
+    Result uploadAvatar(int id ,MultipartFile file);
 
     Result uploadReporter(ReporterDTO file);
 

@@ -5,7 +5,6 @@ import lombok.Data;
 @Data
 public class CommentDTO {
     private String commentContent;
-    private Integer commentPreId;
     private Integer commentAuthorId;
     private Integer status;
     private Integer contentId;

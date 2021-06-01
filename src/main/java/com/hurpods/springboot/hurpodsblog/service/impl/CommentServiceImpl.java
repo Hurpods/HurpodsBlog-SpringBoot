@@ -51,4 +51,29 @@ public class CommentServiceImpl implements CommentService {
         int num = commentDAO.deleteCommentById(id);
         return num == 1 ? ResultFactory.buildSuccessResult("删除成功") : ResultFactory.buildFailureResult("unknown error");
     }
+
+    @Override
+    public List<Comment> getAllComments() {
+        return commentDAO.getAllComments();
+    }
+
+    @Override
+    public Integer getCommentNumber() {
+        return commentDAO.getCommentNumber();
+    }
+
+    @Override
+    public Result fuzzySearch(String keywords) {
+        List<Comment> commentList = commentDAO.fuzzySearch(keywords);
+        for (Comment comment : commentList) {
+            comment.setCommentContent(HtmlUtil.filter(HtmlUtil.unescape(comment.getCommentContent())));
+        }
+        return commentList.size() > 0 ? ResultFactory.buildSuccessResult(commentList) : ResultFactory.buildFailureResult("无数据");
+    }
+
+    @Override
+    public Result batchDelete(List<Integer> idList) {
+        int num = commentDAO.batchDelete(idList);
+        return num > 0 ? ResultFactory.buildSuccessResult("success") : ResultFactory.buildFailureResult("unknown error");
+    }
 }

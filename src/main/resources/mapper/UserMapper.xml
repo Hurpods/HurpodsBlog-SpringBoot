@@ -174,4 +174,10 @@
         set enabled=1
         where user_id = #{id}
     </update>
+
+    <update id="uploadAvatar">
+        update user
+        set user_avatar=#{url}
+        where user_id = #{id}
+    </update>
 </mapper>

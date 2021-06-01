@@ -1,6 +1,5 @@
 package com.hurpods.springboot.hurpodsblog.service;
 
-import com.hurpods.springboot.hurpodsblog.dto.LoginRequest;
 import com.hurpods.springboot.hurpodsblog.dto.RegisterRequest;
 import com.hurpods.springboot.hurpodsblog.dto.UpdateRequest;
 import com.hurpods.springboot.hurpodsblog.pojo.User;
@@ -8,7 +7,6 @@ import com.hurpods.springboot.hurpodsblog.result.Result;
 import org.apache.ibatis.annotations.Param;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface UserService {
@@ -47,4 +45,6 @@ public interface UserService {
     Integer banUser(List<Integer> idList);
 
     Result unbanUser(int id);
+
+    int uploadAvatar(int id, String s);
 }

@@ -1,13 +1,11 @@
 package com.hurpods.springboot.hurpodsblog.controller;
 
+import cn.hutool.json.JSONObject;
 import com.hurpods.springboot.hurpodsblog.result.Result;
 import com.hurpods.springboot.hurpodsblog.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -45,5 +43,11 @@ public class UploadController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Result uploadCover(MultipartFile file) {
         return uploadService.uploadCover(file);
+    }
+
+    @PostMapping("/avatar")
+    public Result uploadAvatar(@RequestParam(value = "id", required = false) String userId, @RequestParam(value = "file", required = false) MultipartFile file) {
+        int id = Integer.parseInt(userId);
+        return uploadService.uploadAvatar(id, file);
     }
 }

@@ -35,4 +35,6 @@ public interface UserDAO {
     Integer banUser(@Param("idList") List<Integer> idList);
 
     int unbanUser(int id);
+
+    int uploadAvatar(@Param("id") int id, @Param("url") String s);
 }

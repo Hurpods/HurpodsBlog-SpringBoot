@@ -135,7 +135,6 @@ public class AccountController {
     }
 
     @PostMapping("/user/delete/{username}")
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_JUDGEMENT')")
     public Result deleteUser(@RequestBody UpdateRequest updateRequest, @PathVariable String username) {
         return userService.deleteUserByUsername(updateRequest.getOldPassword(), username);
     }
