@@ -44,4 +44,34 @@ public class BackStageController {
         }
         return ResultFactory.buildFailureResult(ResultCode.RESULT_DATA_NONE);
     }
+
+    @DeleteMapping("/log/{date}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public Result deleteLog(@PathVariable String date) {
+        String path = "D:\\Development\\uploads\\logs\\" + date;
+        File file = new File(path);
+        boolean flag = false;
+        try {
+            flag = file.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return flag ? ResultFactory.buildSuccessResult("success") : ResultFactory.buildFailureResult("IOException");
+    }
+
+    @DeleteMapping("/logs")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public Result deleteAllLogs() {
+        String path = "D:\\Development\\uploads\\logs\\";
+        File file = new File(path);
+        File[] children = file.listFiles();
+        boolean flag = true;
+        for (File child : children) {
+            if (child.delete()) {
+            } else {
+                flag = false;
+            }
+        }
+        return !flag ? ResultFactory.buildSuccessResult("success") : ResultFactory.buildFailureResult("IOException");
+    }
 }
